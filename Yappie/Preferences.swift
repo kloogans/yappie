@@ -90,17 +90,7 @@ struct PreferencesView: View {
             .padding(.bottom, 8)
         }
         .sheet(isPresented: $showAddWizard) {
-            // BackendWizardView will be added in Task 7
-            // For now, show a placeholder
-            VStack {
-                Text("Add Backend Wizard")
-                    .font(.headline)
-                Text("Coming in next task")
-                    .foregroundStyle(.secondary)
-                Button("Close") { showAddWizard = false }
-                    .padding()
-            }
-            .frame(width: 400, height: 300)
+            BackendWizardView(store: backendStore)
         }
     }
 }
