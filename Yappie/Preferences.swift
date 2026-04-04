@@ -5,6 +5,8 @@ import ServiceManagement
 struct PreferencesView: View {
     @AppStorage("recordingMode") private var recordingMode: RecordingMode = .pushToTalk
     @AppStorage("deliveryMode") private var deliveryMode: DeliveryMode = .clipboardAndPaste
+    @AppStorage("hotkeyCode") private var hotkeyCode: Int = -1
+    @AppStorage("hotkeyModifiers") private var hotkeyModifiers: Int = 0
     @ObservedObject var backendStore: BackendStore
     @State private var showAddWizard = false
 
@@ -29,10 +31,33 @@ struct PreferencesView: View {
                     .foregroundStyle(.secondary)
 
                 Picker("Recording mode", selection: $recordingMode) {
-                    Text("Push-to-Talk (hold Fn)").tag(RecordingMode.pushToTalk)
-                    Text("Toggle (click menubar)").tag(RecordingMode.toggle)
+                    Text("Push-to-Talk (hold key)").tag(RecordingMode.pushToTalk)
+                    Text("Toggle (press to start/stop)").tag(RecordingMode.toggle)
                 }
                 .pickerStyle(.radioGroup)
+
+                HStack {
+                    Text("Hotkey")
+                        .frame(width: 60, alignment: .trailing)
+                    HotkeyRecorderView(
+                        keyCode: $hotkeyCode,
+                        modifiers: $hotkeyModifiers
+                    )
+                    if hotkeyCode != -1 {
+                        Button("Reset to Fn") {
+                            hotkeyCode = -1
+                            hotkeyModifiers = 0
+                        }
+                        .font(.caption)
+                    }
+                }
+                .padding(.top, 4)
+
+                if hotkeyCode == -1 {
+                    Text("Using Fn key. Click the field above to set a custom hotkey.")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
             }
 
             Divider()
@@ -191,9 +216,7 @@ struct BackendCardView: View {
             Spacer()
 
             Button {
-                if let index = store.backends.firstIndex(where: { $0.id == backend.id }) {
-                    store.remove(at: index)
-                }
+                deleteBackend()
             } label: {
                 Image(systemName: "trash")
                     .font(.system(size: 11))
@@ -230,13 +253,17 @@ struct BackendCardView: View {
             Button("Edit...") { showEdit = true }
             Divider()
             Button("Delete", role: .destructive) {
-                if let index = store.backends.firstIndex(where: { $0.id == backend.id }) {
-                    store.remove(at: index)
-                }
+                deleteBackend()
             }
         }
         .sheet(isPresented: $showEdit) {
             BackendEditView(backend: backend, store: store)
+        }
+    }
+
+    private func deleteBackend() {
+        if let index = store.backends.firstIndex(where: { $0.id == backend.id }) {
+            store.remove(at: index)
         }
     }
 

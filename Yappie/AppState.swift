@@ -21,6 +21,8 @@ final class AppState: ObservableObject {
 
     @AppStorage("recordingMode") var recordingMode: RecordingMode = .pushToTalk
     @AppStorage("deliveryMode") var deliveryMode: DeliveryMode = .clipboardAndPaste
+    @AppStorage("hotkeyCode") var hotkeyCode: Int = -1
+    @AppStorage("hotkeyModifiers") var hotkeyModifiers: Int = 0
 
     private let recorder = AudioRecorder()
     let backendStore = BackendStore()
@@ -28,6 +30,8 @@ final class AppState: ObservableObject {
     private var hasShownFallbackNotice = false
     private var durationTimer: Timer?
     private var lastAppliedMode: RecordingMode?
+    private var lastAppliedHotkeyCode: Int?
+    private var lastAppliedHotkeyModifiers: Int?
     private var cachedManager: BackendManager?
     private var cancellables = Set<AnyCancellable>()
 
@@ -76,13 +80,29 @@ final class AppState: ObservableObject {
     }
 
     func applyRecordingMode() {
-        guard recordingMode != lastAppliedMode else { return }
-        lastAppliedMode = recordingMode
-        hotkeyManager.stopFnMonitor()
-        hotkeyManager.unregisterToggleHotkey()
+        let modeChanged = recordingMode != lastAppliedMode
+        let hotkeyChanged = hotkeyCode != lastAppliedHotkeyCode || hotkeyModifiers != lastAppliedHotkeyModifiers
+        guard modeChanged || hotkeyChanged else { return }
 
-        if recordingMode == .pushToTalk {
-            hotkeyManager.startFnMonitor()
+        lastAppliedMode = recordingMode
+        lastAppliedHotkeyCode = hotkeyCode
+        lastAppliedHotkeyModifiers = hotkeyModifiers
+
+        hotkeyManager.stopFnMonitor()
+        hotkeyManager.unregisterHotkey()
+
+        if hotkeyCode == -1 {
+            // Default: Fn key (push-to-talk only, toggle uses menubar)
+            if recordingMode == .pushToTalk {
+                hotkeyManager.startFnMonitor()
+            }
+        } else {
+            // Custom hotkey via Carbon
+            hotkeyManager.registerHotkey(
+                keyCode: UInt32(hotkeyCode),
+                modifiers: UInt32(hotkeyModifiers),
+                pushToTalk: recordingMode == .pushToTalk
+            )
         }
     }
 

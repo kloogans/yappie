@@ -25,6 +25,7 @@
 		AF3EAED1FBB088794B5C2BE5 /* BackendWizard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8659DA66CD5A72C5B348C6FF /* BackendWizard.swift */; };
 		B7B6BC8DDFA9B7C6656E3F7C /* TextDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485A1CB8C2C7F718F6172DA5 /* TextDelivery.swift */; };
 		BF55640D266C9A1886370A42 /* TranscriptionClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867BC64A19693BFF9DCB0A61 /* TranscriptionClientTests.swift */; };
+		D870D2225087ED76B4C1EED8 /* HotkeyRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15FF2A622F9BA1A8C7003EBF /* HotkeyRecorderView.swift */; };
 		E0478D017F5D62349AE8B38F /* BackendManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066E40FF62C5DECAF4FED4B9 /* BackendManagerTests.swift */; };
 		E5EE08F65CA6474DACC386C0 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DB11B3EC1C2D7CD49724A5 /* HotkeyManager.swift */; };
 		F162E61CD1760EAC983604E9 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9183C2CC788F1A74E2C5475F /* Preferences.swift */; };
@@ -45,6 +46,7 @@
 /* Begin PBXFileReference section */
 		066E40FF62C5DECAF4FED4B9 /* BackendManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendManagerTests.swift; sourceTree = "<group>"; };
 		0B58DD35181CE167F8EDFADF /* YappieTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YappieTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		15FF2A622F9BA1A8C7003EBF /* HotkeyRecorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyRecorderView.swift; sourceTree = "<group>"; };
 		25E75F4CDA6FCE2A547C5627 /* APIBackendTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIBackendTests.swift; sourceTree = "<group>"; };
 		485A1CB8C2C7F718F6172DA5 /* TextDelivery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDelivery.swift; sourceTree = "<group>"; };
 		4911A675EE3280F24A6F5BE4 /* APIBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIBackend.swift; sourceTree = "<group>"; };
@@ -101,6 +103,7 @@
 				E4597B7BAF801F4403167660 /* BackendConfig.swift */,
 				8659DA66CD5A72C5B348C6FF /* BackendWizard.swift */,
 				51DB11B3EC1C2D7CD49724A5 /* HotkeyManager.swift */,
+				15FF2A622F9BA1A8C7003EBF /* HotkeyRecorderView.swift */,
 				C9C4F3252BDEBA6D57592F7D /* Info.plist */,
 				9183C2CC788F1A74E2C5475F /* Preferences.swift */,
 				D2CC030ECC0438B7DA8639B6 /* TCPBackend.swift */,
@@ -256,6 +259,7 @@
 				6B8705F4BFF0614D7D4AE5C7 /* BackendConfig.swift in Sources */,
 				AF3EAED1FBB088794B5C2BE5 /* BackendWizard.swift in Sources */,
 				E5EE08F65CA6474DACC386C0 /* HotkeyManager.swift in Sources */,
+				D870D2225087ED76B4C1EED8 /* HotkeyRecorderView.swift in Sources */,
 				F162E61CD1760EAC983604E9 /* Preferences.swift in Sources */,
 				FD473A48EF8AFDDC42444F31 /* TCPBackend.swift in Sources */,
 				B7B6BC8DDFA9B7C6656E3F7C /* TextDelivery.swift in Sources */,
