@@ -13,6 +13,7 @@
 		9D3D7B498BCFE6285C15FF1E /* WAVEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE4205EA30A135F5B4A21F81 /* WAVEncoder.swift */; };
 		A1B2C3D4E5F60718293A4B5C /* TranscriptionClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5D /* TranscriptionClient.swift */; };
 		A1B2C3D4E5F60718293A4B5E /* TranscriptionClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5F /* TranscriptionClientTests.swift */; };
+		B2C3D4E5F6071829A4B5C6D7 /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6071829A4B5C6D8 /* AudioRecorder.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,6 +31,7 @@
 		297D79CE4DECF2145B95B7FA /* YappieTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YappieTests.swift; sourceTree = "<group>"; };
 		4D6FF41D4D350D7BA2CE49E5 /* Yappie.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yappie.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1B2C3D4E5F60718293A4B5D /* TranscriptionClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionClient.swift; sourceTree = "<group>"; };
+		B2C3D4E5F6071829A4B5C6D8 /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60718293A4B5F /* TranscriptionClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionClientTests.swift; sourceTree = "<group>"; };
 		BE2646FCFEF3CB04BF2B9CEA /* YappieApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YappieApp.swift; sourceTree = "<group>"; };
 		C9C4F3252BDEBA6D57592F7D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -54,6 +56,7 @@
 				EE4205EA30A135F5B4A21F81 /* WAVEncoder.swift */,
 				BE2646FCFEF3CB04BF2B9CEA /* YappieApp.swift */,
 				A1B2C3D4E5F60718293A4B5D /* TranscriptionClient.swift */,
+				B2C3D4E5F6071829A4B5C6D8 /* AudioRecorder.swift */,
 			);
 			path = Yappie;
 			sourceTree = "<group>";
@@ -164,6 +167,7 @@
 				9D3D7B498BCFE6285C15FF1E /* WAVEncoder.swift in Sources */,
 				3FD465D6D629247714A122DA /* YappieApp.swift in Sources */,
 				A1B2C3D4E5F60718293A4B5C /* TranscriptionClient.swift in Sources */,
+				B2C3D4E5F6071829A4B5C6D7 /* AudioRecorder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
