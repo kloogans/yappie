@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Yappie/Assets/yappie-logo.svg" width="120" alt="Yappie logo" />
+  <img src="Yappie/Assets/yappie-logo.png" width="200" alt="Yappie logo" />
 </p>
 
 <h1 align="center">Yappie</h1>
