@@ -12,6 +12,8 @@
 
 Yappie is a small menubar app that records your voice, sends the audio to a speech-to-text backend, and pastes the transcribed text wherever your cursor is. It supports any OpenAI-compatible Whisper API and custom TCP transcription servers, with automatic fallback if your primary backend is unavailable.
 
+> **Looking for the Linux version?** Check out [Yappie for Linux](https://github.com/kloogans/yappie-linux).
+
 ## Getting started
 
 ### Requirements
