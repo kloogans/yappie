@@ -2,7 +2,9 @@
   <img src="Yappie/Assets/yappie-logo.png" width="200" alt="Yappie logo" />
 </p>
 
-<h1 align="center">Yappie</h1>
+<p align="center" style="text-decoration:none;">
+  <strong style="font-size:2em;">Yappie</strong>
+</p>
 
 <p align="center">
   Fast, local-first dictation for macOS.
@@ -19,24 +21,27 @@ Yappie is a small menubar app that records your voice, sends the audio to a spee
 ### Requirements
 
 - macOS 14 or later
-- Xcode (for building from source)
 - At least one transcription backend (see [Backends](#backends) below)
 
 ### Install
+
+**Homebrew (recommended):**
+
+```bash
+brew tap kloogans/yappie
+brew install --cask yappie
+```
+
+**Download:** Grab the latest `.zip` from [Releases](https://github.com/kloogans/yappie/releases), unzip, and drag `Yappie.app` to your Applications folder.
+
+**Build from source:** Requires Xcode.
 
 ```bash
 git clone https://github.com/kloogans/yappie.git
 cd yappie
 make build
-```
-
-To launch the app after building:
-
-```bash
 make run
 ```
-
-You can also open the built `Yappie.app` directly from `~/Library/Developer/Xcode/DerivedData/`.
 
 ### Permissions
 
