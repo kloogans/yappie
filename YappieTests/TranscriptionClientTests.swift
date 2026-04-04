@@ -3,7 +3,7 @@ import XCTest
 import Network
 @testable import Yappie
 
-final class TranscriptionClientTests: XCTestCase {
+final class TCPBackendTests: XCTestCase {
 
     private func startMockServer(port: UInt16, response: String) -> NWListener {
         let listener = try! NWListener(using: .tcp, on: NWEndpoint.Port(rawValue: port)!)
@@ -21,10 +21,10 @@ final class TranscriptionClientTests: XCTestCase {
     }
 
     private func readAll(_ conn: NWConnection, accumulated: Data = Data(), completion: @escaping (Data) -> Void) {
-        conn.receive(minimumIncompleteLength: 1, maximumLength: 65536) { data, _, isComplete, _ in
+        conn.receive(minimumIncompleteLength: 1, maximumLength: 65536) { data, _, isComplete, error in
             var acc = accumulated
             if let data { acc.append(data) }
-            if isComplete {
+            if isComplete || error != nil {
                 completion(acc)
             } else {
                 self.readAll(conn, accumulated: acc, completion: completion)
@@ -37,9 +37,10 @@ final class TranscriptionClientTests: XCTestCase {
         defer { listener.cancel() }
         try await Task.sleep(for: .milliseconds(100))
 
-        let client = TranscriptionClient()
+        let config = BackendConfig(name: "Test", type: .tcp, enabled: true, host: "127.0.0.1", port: 19876)
+        let client = TCPBackend(config: config)
         let wavData = Data(repeating: 0, count: 100)
-        let result = try await client.transcribe(wavData: wavData, host: "127.0.0.1", port: 19876)
+        let result = try await client.transcribe(wavData: wavData)
         XCTAssertEqual(result, "Hello world")
     }
 
@@ -48,11 +49,12 @@ final class TranscriptionClientTests: XCTestCase {
         defer { listener.cancel() }
         try await Task.sleep(for: .milliseconds(100))
 
-        let client = TranscriptionClient()
+        let config = BackendConfig(name: "Test", type: .tcp, enabled: true, host: "127.0.0.1", port: 19877)
+        let client = TCPBackend(config: config)
         let wavData = Data(repeating: 0, count: 100)
 
         do {
-            _ = try await client.transcribe(wavData: wavData, host: "127.0.0.1", port: 19877)
+            _ = try await client.transcribe(wavData: wavData)
             XCTFail("Should have thrown")
         } catch let error as TranscriptionError {
             XCTAssertEqual(error, .serverError("GPU out of memory"))

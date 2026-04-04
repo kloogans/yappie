@@ -23,7 +23,8 @@ final class AppState: ObservableObject {
     @AppStorage("deliveryMode") var deliveryMode: DeliveryMode = .clipboardAndPaste
 
     private let recorder = AudioRecorder()
-    private let client = TranscriptionClient()
+    // Temporarily use TCPBackend with a default config for compilation
+    private let client = TCPBackend(config: BackendConfig(name: "Default", type: .tcp, enabled: true, host: "192.168.4.24", port: 9876))
     private let hotkeyManager = HotkeyManager()
     private var durationTimer: Timer?
 
@@ -94,11 +95,7 @@ final class AppState: ObservableObject {
 
         Task { @MainActor in
             do {
-                let text = try await client.transcribe(
-                    wavData: wavData,
-                    host: serverHost,
-                    port: UInt16(serverPort)
-                )
+                let text = try await client.transcribe(wavData: wavData)
                 TextDelivery.deliver(text, mode: deliveryMode)
             } catch {
                 NSLog("[Yappie] Transcription failed: %@", "\(error)")

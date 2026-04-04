@@ -1,4 +1,4 @@
-// Yappie/TranscriptionClient.swift
+// Yappie/TCPBackend.swift
 import Foundation
 import Network
 
@@ -6,12 +6,20 @@ enum TranscriptionError: Error, Equatable {
     case connectionFailed(String)
     case serverError(String)
     case emptyResponse
+    case allBackendsFailed
 }
 
-final class TranscriptionClient {
+final class TCPBackend: TranscriptionBackend {
+    private let host: String
+    private let port: UInt16
     private static let queue = DispatchQueue(label: "yappie.tcp")
 
-    func transcribe(wavData: Data, host: String, port: UInt16) async throws -> String {
+    init(config: BackendConfig) {
+        self.host = config.host ?? "127.0.0.1"
+        self.port = UInt16(config.port ?? 9876)
+    }
+
+    func transcribe(wavData: Data) async throws -> String {
         let connection = NWConnection(
             host: NWEndpoint.Host(host),
             port: NWEndpoint.Port(rawValue: port)!,
