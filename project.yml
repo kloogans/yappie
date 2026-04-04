@@ -10,6 +10,9 @@ targets:
     sources: [Yappie]
     info:
       path: Yappie/Info.plist
+      properties:
+        LSUIElement: true
+        NSMicrophoneUsageDescription: "Yappie needs microphone access to record audio for speech-to-text transcription."
     settings:
       INFOPLIST_FILE: Yappie/Info.plist
       GENERATE_INFOPLIST_FILE: false
