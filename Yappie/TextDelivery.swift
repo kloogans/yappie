@@ -13,7 +13,7 @@ enum TextDelivery {
         pasteboard.setString(text, forType: .string)
 
         if mode == .clipboardAndPaste {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
                 simulatePaste()
             }
         }
