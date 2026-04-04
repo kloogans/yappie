@@ -1,27 +1,26 @@
-# Yappie
+<p align="center">
+  <img src="Yappie/Assets/yappie-logo.svg" width="120" alt="Yappie logo" />
+</p>
 
-Fast dictation for macOS. Hold a key, speak, release, and the transcribed text gets pasted into whatever app you're using.
+<h1 align="center">Yappie</h1>
 
-Yappie is a lightweight menubar app that sends audio to a speech-to-text server for transcription. It works with any OpenAI-compatible API (OpenAI, Groq, local Whisper servers) or custom TCP endpoints.
+<p align="center">
+  Fast, local-first dictation for macOS.
+</p>
 
-## How it works
+---
 
-1. **Hold Fn** to start recording
-2. **Release Fn** to stop and transcribe
-3. Text is copied to your clipboard and pasted automatically
+Yappie is a small menubar app that records your voice, sends the audio to a speech-to-text backend, and pastes the transcribed text wherever your cursor is. It supports any OpenAI-compatible Whisper API and custom TCP transcription servers, with automatic fallback if your primary backend is unavailable.
 
-Or use **toggle mode**: click the menubar icon to start, click again to stop.
+## Getting started
 
-## Requirements
+### Requirements
 
-- macOS 14+
-- A transcription backend — either:
-  - An OpenAI-compatible API endpoint (OpenAI, Groq, local faster-whisper-server, etc.)
-  - A custom TCP transcription server
+- macOS 14 or later
+- Xcode (for building from source)
+- At least one transcription backend (see [Backends](#backends) below)
 
-## Install
-
-Clone and build with Xcode:
+### Install
 
 ```bash
 git clone https://github.com/kloogans/yappie.git
@@ -29,40 +28,98 @@ cd yappie
 make build
 ```
 
-Then open `Yappie.app` from the build output, or:
+To launch the app after building:
 
 ```bash
 make run
 ```
 
-## Configuration
+You can also open the built `Yappie.app` directly from `~/Library/Developer/Xcode/DerivedData/`.
 
-Open **Preferences** from the menubar icon.
+### Permissions
 
-### Backends
+On first launch, macOS will ask for two permissions:
 
-Add one or more transcription backends. Yappie tries them in order — if the first fails, it automatically falls back to the next.
+- **Microphone** - you'll get a system dialog automatically
+- **Accessibility** - needed for the auto-paste feature. Go to System Settings > Privacy & Security > Accessibility and add Yappie
 
-**OpenAI-Compatible API** — works with any service implementing the Whisper API format:
-- [OpenAI](https://platform.openai.com) — `https://api.openai.com/v1` with your API key
-- [Groq](https://groq.com) — `https://api.groq.com/openai/v1` with your API key
-- [faster-whisper-server](https://github.com/fedirz/faster-whisper-server) — `http://your-server:8000/v1` (no API key needed)
-- Any OpenAI-compatible endpoint
+If you skip the Accessibility permission, Yappie will still work but you'll need to paste manually with Cmd+V.
 
-**Custom TCP** — direct socket connection for custom servers like [hypr-dictate](https://github.com/kloogans/hypr-dictate).
+## How to use
+
+**Push-to-talk (default):** Hold the Fn key, speak, then release. Your speech gets transcribed and pasted into the focused app.
+
+**Toggle mode:** Click the Yappie icon in the menu bar to start recording, click again to stop and transcribe.
+
+You can switch between these modes in Preferences.
+
+## Backends
+
+Yappie needs a transcription backend to convert your audio to text. You can configure one or more backends in Preferences > Backends. If you set up multiple backends, Yappie will try them in order and fall back to the next one if the first is unreachable.
+
+### OpenAI-compatible API
+
+Works with any service that implements the `/v1/audio/transcriptions` endpoint. Some examples:
+
+| Service | Base URL | API key required |
+|---------|----------|-----------------|
+| [OpenAI](https://platform.openai.com) | `https://api.openai.com/v1` | Yes |
+| [Groq](https://groq.com) | `https://api.groq.com/openai/v1` | Yes |
+| [faster-whisper-server](https://github.com/fedirz/faster-whisper-server) | `http://your-server:8000/v1` | No |
+| [LocalAI](https://localai.io) | `http://localhost:8080/v1` | No |
+
+To add one, open Preferences > Backends > Add Backend > OpenAI-Compatible API, then fill in the base URL, API key (if needed), and model name.
+
+API keys are stored in the macOS Keychain, not in plaintext config files.
+
+### Custom TCP
+
+For custom transcription servers that accept raw audio over a TCP socket. You provide a host and port. Yappie sends the WAV audio data over the connection and reads back the transcribed text.
+
+This works with servers like [hypr-dictate](https://github.com/kloogans/hypr-dictate) and anything else that follows the same simple protocol: receive WAV bytes, respond with UTF-8 text.
+
+## Preferences
+
+Access preferences by clicking the Yappie icon in the menu bar and selecting Preferences.
 
 ### General
 
-- **Recording mode** — Push-to-talk (hold Fn) or toggle
-- **After transcription** — Paste automatically or just copy to clipboard
-- **Launch at login** — Start Yappie when you log in
+| Setting | Options | Default |
+|---------|---------|---------|
+| Recording mode | Push-to-talk (hold Fn) / Toggle (click to start/stop) | Push-to-talk |
+| After transcription | Copy and paste / Copy to clipboard only | Copy and paste |
+| Launch at login | On / Off | Off |
 
-## Permissions
+### Backends
 
-Yappie needs two macOS permissions:
+Your configured transcription backends are shown as cards. You can:
 
-- **Microphone** — prompted automatically on first use
-- **Accessibility** — needed for auto-paste (System Settings → Privacy & Security → Accessibility)
+- **Reorder** them to set priority (top = primary, rest = fallbacks)
+- **Enable/disable** individual backends with the toggle
+- **Delete** a backend by right-clicking its card
+- **Add** new backends with the Add Backend button
+
+## Building from source
+
+```bash
+# Build
+make build
+
+# Run
+make run
+
+# Run tests
+make test
+
+# Clean
+make clean
+```
+
+The project uses [xcodegen](https://github.com/yonaskolb/XcodeGen) to generate the Xcode project from `project.yml`. If you modify the project structure, regenerate with:
+
+```bash
+xcodegen generate
+```
 
 ## License
 
