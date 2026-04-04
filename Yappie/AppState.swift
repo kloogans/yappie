@@ -17,15 +17,13 @@ final class AppState: ObservableObject {
     @Published var status: AppStatus = .idle
     @Published var recordingDuration: TimeInterval = 0
 
-    @AppStorage("serverHost") var serverHost = "192.168.4.24"
-    @AppStorage("serverPort") var serverPort = 9876
     @AppStorage("recordingMode") var recordingMode: RecordingMode = .pushToTalk
     @AppStorage("deliveryMode") var deliveryMode: DeliveryMode = .clipboardAndPaste
 
     private let recorder = AudioRecorder()
-    // Temporarily use TCPBackend with a default config for compilation
-    private let client = TCPBackend(config: BackendConfig(name: "Default", type: .tcp, enabled: true, host: "192.168.4.24", port: 9876))
+    let backendStore = BackendStore()
     private let hotkeyManager = HotkeyManager()
+    private var hasShownFallbackNotice = false
     private var durationTimer: Timer?
 
     var statusIcon: String {
@@ -43,6 +41,10 @@ final class AppState: ObservableObject {
     }
 
     func setup() {
+        if backendStore.backends.isEmpty {
+            backendStore.migrateFromLegacySettings()
+        }
+
         hotkeyManager.onRecordStart = { [weak self] in
             Task { @MainActor in self?.startRecording() }
         }
@@ -95,10 +97,22 @@ final class AppState: ObservableObject {
 
         Task { @MainActor in
             do {
-                let text = try await client.transcribe(wavData: wavData)
-                TextDelivery.deliver(text, mode: deliveryMode)
+                let manager = BackendManager(store: backendStore)
+                let result = try await manager.transcribe(wavData: wavData)
+
+                if result.backendIndex > 0 && !hasShownFallbackNotice {
+                    hasShownFallbackNotice = true
+                    let enabledBackends = backendStore.backends.filter { $0.enabled }
+                    if result.backendIndex < enabledBackends.count {
+                        let name = enabledBackends[result.backendIndex].name
+                        showNotification(title: "Yappie", body: "Using \(name)")
+                    }
+                }
+
+                TextDelivery.deliver(result.text, mode: deliveryMode)
             } catch {
                 NSLog("[Yappie] Transcription failed: %@", "\(error)")
+                showNotification(title: "Yappie", body: "Transcription failed — no backends available")
             }
             status = .idle
         }
@@ -110,5 +124,12 @@ final class AppState: ObservableObject {
         } else if status == .recording {
             stopRecording()
         }
+    }
+
+    private func showNotification(title: String, body: String) {
+        let notification = NSUserNotification()
+        notification.title = title
+        notification.informativeText = body
+        NSUserNotificationCenter.default.deliver(notification)
     }
 }
