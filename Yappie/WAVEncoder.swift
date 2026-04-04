@@ -34,7 +34,6 @@ enum WAVEncoder {
 
 extension Data {
     mutating func appendLE<T: FixedWidthInteger>(_ value: T) {
-        var le = value.littleEndian
-        append(Data(bytes: &le, count: MemoryLayout<T>.size))
+        Swift.withUnsafeBytes(of: value.littleEndian) { append(contentsOf: $0) }
     }
 }

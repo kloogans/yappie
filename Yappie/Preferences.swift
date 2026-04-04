@@ -5,8 +5,8 @@ import ServiceManagement
 struct PreferencesView: View {
     @AppStorage("serverHost") private var serverHost = "192.168.4.24"
     @AppStorage("serverPort") private var serverPort = 9876
-    @AppStorage("recordingMode") private var recordingMode = RecordingMode.pushToTalk.rawValue
-    @AppStorage("deliveryMode") private var deliveryMode = DeliveryMode.clipboardAndPaste.rawValue
+    @AppStorage("recordingMode") private var recordingMode: RecordingMode = .pushToTalk
+    @AppStorage("deliveryMode") private var deliveryMode: DeliveryMode = .clipboardAndPaste
 
     var body: some View {
         TabView {
@@ -21,14 +21,14 @@ struct PreferencesView: View {
     private var generalTab: some View {
         Form {
             Picker("Recording mode", selection: $recordingMode) {
-                Text("Push-to-Talk (hold Fn)").tag(RecordingMode.pushToTalk.rawValue)
-                Text("Toggle (click menubar)").tag(RecordingMode.toggle.rawValue)
+                Text("Push-to-Talk (hold Fn)").tag(RecordingMode.pushToTalk)
+                Text("Toggle (click menubar)").tag(RecordingMode.toggle)
             }
             .pickerStyle(.radioGroup)
 
             Picker("After transcription", selection: $deliveryMode) {
-                Text("Copy & paste").tag(DeliveryMode.clipboardAndPaste.rawValue)
-                Text("Copy to clipboard only").tag(DeliveryMode.clipboardOnly.rawValue)
+                Text("Copy & paste").tag(DeliveryMode.clipboardAndPaste)
+                Text("Copy to clipboard only").tag(DeliveryMode.clipboardOnly)
             }
             .pickerStyle(.radioGroup)
 
@@ -56,7 +56,7 @@ struct PreferencesView: View {
                         try SMAppService.mainApp.unregister()
                     }
                 } catch {
-                    print("Launch at login failed: \(error)")
+                    NSLog("[Yappie] Launch at login failed: %@", "\(error)")
                 }
             }
         )

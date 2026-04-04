@@ -9,6 +9,8 @@ enum TranscriptionError: Error, Equatable {
 }
 
 final class TranscriptionClient {
+    private static let queue = DispatchQueue(label: "yappie.tcp")
+
     func transcribe(wavData: Data, host: String, port: UInt16) async throws -> String {
         let connection = NWConnection(
             host: NWEndpoint.Host(host),
@@ -41,7 +43,7 @@ final class TranscriptionClient {
                 }
             }
 
-            connection.start(queue: DispatchQueue(label: "yappie.tcp"))
+            connection.start(queue: Self.queue)
 
             connection.send(content: wavData, contentContext: .finalMessage, isComplete: true, completion: .contentProcessed { error in
                 if let error {
@@ -58,7 +60,10 @@ final class TranscriptionClient {
                         return
                     }
 
-                    let text = String(data: data, encoding: .utf8) ?? ""
+                    guard let text = String(data: data, encoding: .utf8) else {
+                        resume(with: .failure(TranscriptionError.emptyResponse))
+                        return
+                    }
 
                     if text.hasPrefix("ERROR:") {
                         let msg = String(text.dropFirst(6))

@@ -64,12 +64,11 @@ final class HotkeyManager {
             guard let refcon else { return OSStatus(eventNotHandledErr) }
             let mgr = Unmanaged<HotkeyManager>.fromOpaque(refcon).takeUnretainedValue()
             DispatchQueue.main.async {
+                mgr.isToggled.toggle()
                 if mgr.isToggled {
-                    mgr.isToggled = false
-                    mgr.onRecordStop?()
-                } else {
-                    mgr.isToggled = true
                     mgr.onRecordStart?()
+                } else {
+                    mgr.onRecordStop?()
                 }
             }
             return noErr

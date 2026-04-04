@@ -5,7 +5,6 @@ import AVFoundation
 @main
 struct YappieApp: App {
     @StateObject private var appState = AppState()
-    @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
     var body: some Scene {
         MenuBarExtra("Yappie", systemImage: appState.statusIcon) {
@@ -50,8 +49,4 @@ struct YappieApp: App {
         }
         _ = TextDelivery.checkAccessibility(prompt: true)
     }
-}
-
-class AppDelegate: NSObject, NSApplicationDelegate {
-    func applicationDidFinishLaunching(_ notification: Notification) {}
 }

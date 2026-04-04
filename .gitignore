@@ -11,3 +11,6 @@ DerivedData/
 
 # Build
 .build/
+
+# Code coverage artifacts
+default.profraw

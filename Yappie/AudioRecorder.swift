@@ -5,13 +5,16 @@ import CoreAudio
 final class AudioRecorder {
     private var engine: AVAudioEngine?
     private var floatSamples = [Float]()
+    private let samplesLock = NSLock()
     private var hwSampleRate: Double = 44100
     private let targetSampleRate: Double = 16000
 
-    private(set) var isRecording = false
+    private static var cachedBuiltInMicID: AudioDeviceID?
 
     func startRecording() throws {
+        samplesLock.lock()
         floatSamples = []
+        samplesLock.unlock()
 
         // Switch system default input to built-in mic (if available)
         // AVAudioEngine always uses the system default, so we must change it
@@ -33,21 +36,25 @@ final class AudioRecorder {
             guard let self, let channelData = buffer.floatChannelData else { return }
             let frameCount = Int(buffer.frameLength)
             let channelCount = Int(buffer.format.channelCount)
+            let invChannelCount = 1.0 / Float(channelCount)
 
+            var mono = [Float](repeating: 0, count: frameCount)
             for i in 0..<frameCount {
                 var sample: Float = 0
                 for ch in 0..<channelCount {
                     sample += channelData[ch][i]
                 }
-                sample /= Float(channelCount)
-                self.floatSamples.append(sample)
+                mono[i] = sample * invChannelCount
             }
+
+            self.samplesLock.lock()
+            self.floatSamples.append(contentsOf: mono)
+            self.samplesLock.unlock()
         }
 
         engine.prepare()
         try engine.start()
         self.engine = engine
-        isRecording = true
     }
 
     func stopRecording() -> Data {
@@ -56,22 +63,26 @@ final class AudioRecorder {
             engine.stop()
         }
         engine = nil
-        isRecording = false
+
+        samplesLock.lock()
+        let samples = floatSamples
+        floatSamples = []
+        samplesLock.unlock()
 
         // Downsample to 16kHz
         let ratio = hwSampleRate / targetSampleRate
-        let outputCount = max(0, Int(Double(floatSamples.count) / ratio))
+        let outputCount = max(0, Int(Double(samples.count) / ratio))
         var int16Samples = [Int16](repeating: 0, count: outputCount)
 
         for i in 0..<outputCount {
             let srcIdx = Double(i) * ratio
             let idx0 = Int(srcIdx)
             let frac = Float(srcIdx - Double(idx0))
-            let idx1 = min(idx0 + 1, floatSamples.count - 1)
+            let idx1 = min(idx0 + 1, samples.count - 1)
 
             let sample: Float
-            if idx0 < floatSamples.count {
-                sample = floatSamples[idx0] * (1 - frac) + floatSamples[idx1] * frac
+            if idx0 < samples.count {
+                sample = samples[idx0] * (1 - frac) + samples[idx1] * frac
             } else {
                 sample = 0
             }
@@ -80,15 +91,13 @@ final class AudioRecorder {
             int16Samples[i] = Int16(clamped * 32767)
         }
 
-        floatSamples = []
-
         let pcmData = int16Samples.withUnsafeBufferPointer { Data(buffer: $0) }
         return WAVEncoder.encode(pcmData: pcmData, sampleRate: UInt32(targetSampleRate), channels: 1, bitsPerSample: 16)
     }
 
     // MARK: - System Default Device Management
 
-    static func getDefaultInputDevice() -> AudioDeviceID {
+    private static func getDefaultInputDevice() -> AudioDeviceID {
         var address = AudioObjectPropertyAddress(
             mSelector: kAudioHardwarePropertyDefaultInputDevice,
             mScope: kAudioObjectPropertyScopeGlobal,
@@ -100,7 +109,7 @@ final class AudioRecorder {
         return deviceID
     }
 
-    static func setDefaultInputDevice(_ deviceID: AudioDeviceID) {
+    private static func setDefaultInputDevice(_ deviceID: AudioDeviceID) {
         var address = AudioObjectPropertyAddress(
             mSelector: kAudioHardwarePropertyDefaultInputDevice,
             mScope: kAudioObjectPropertyScopeGlobal,
@@ -113,7 +122,11 @@ final class AudioRecorder {
         )
     }
 
-    static func findBuiltInMicID() -> AudioDeviceID? {
+    private static func findBuiltInMicID() -> AudioDeviceID? {
+        if let cached = cachedBuiltInMicID {
+            return cached
+        }
+
         var propSize: UInt32 = 0
         var address = AudioObjectPropertyAddress(
             mSelector: kAudioHardwarePropertyDevices,
@@ -148,6 +161,7 @@ final class AudioRecorder {
             AudioObjectGetPropertyDataSize(device, &inputAddr, 0, nil, &inputSize)
             guard inputSize > 0 else { continue }
 
+            cachedBuiltInMicID = device
             return device
         }
         return nil
