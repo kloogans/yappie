@@ -1,12 +1,29 @@
 // Yappie/BackendWizard.swift
 import SwiftUI
 
+// MARK: - Presets
+
+struct APIPreset {
+    let name: String
+    let baseURL: String
+    let model: String
+    let needsKey: Bool
+    let icon: String
+}
+
+private let apiPresets: [APIPreset] = [
+    APIPreset(name: "OpenAI", baseURL: "https://api.openai.com/v1", model: "whisper-1", needsKey: true, icon: "brain"),
+    APIPreset(name: "Groq", baseURL: "https://api.groq.com/openai/v1", model: "whisper-large-v3-turbo", needsKey: true, icon: "bolt.fill"),
+    APIPreset(name: "faster-whisper-server", baseURL: "http://localhost:8000/v1", model: "large-v3-turbo", needsKey: false, icon: "server.rack"),
+]
+
 // MARK: - Add Wizard (Two-Step)
 
 struct BackendWizardView: View {
     @ObservedObject var store: BackendStore
     @Environment(\.dismiss) private var dismiss
     @State private var selectedType: BackendType?
+    @State private var selectedPreset: APIPreset?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -18,32 +35,80 @@ struct BackendWizardView: View {
                 BackendFormView(
                     type: selectedType,
                     store: store,
+                    preset: selectedPreset,
                     onDismiss: { dismiss() },
-                    onBack: { self.selectedType = nil }
+                    onBack: { self.selectedType = nil; self.selectedPreset = nil }
                 )
             } else {
                 typeSelectionView
             }
         }
-        .frame(width: 420, height: 360)
+        .frame(width: 420, height: 420)
     }
 
     private var typeSelectionView: some View {
-        VStack(spacing: 12) {
-            TypeSelectionButton(
-                emoji: "\u{1F310}",
-                title: "OpenAI-Compatible API",
-                subtitle: "Works with OpenAI, Groq, Together AI, local servers like faster-whisper-server, and any service implementing the Whisper API."
-            ) {
-                selectedType = .api
+        VStack(spacing: 16) {
+            // Quick presets
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Quick Setup")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .padding(.leading, 4)
+
+                ForEach(apiPresets, id: \.name) { preset in
+                    Button {
+                        selectedPreset = preset
+                        selectedType = .api
+                    } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: preset.icon)
+                                .frame(width: 20)
+                                .foregroundStyle(.primary)
+                            Text(preset.name)
+                                .fontWeight(.medium)
+                            Spacer()
+                            if preset.needsKey {
+                                Text("API key required")
+                                    .font(.caption2)
+                                    .foregroundStyle(.tertiary)
+                            }
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(.quaternary)
+                        .cornerRadius(6)
+                    }
+                    .buttonStyle(.plain)
+                }
             }
 
-            TypeSelectionButton(
-                emoji: "\u{1F50C}",
-                title: "Custom TCP Socket",
-                subtitle: "Direct TCP connection \u{2014} send WAV audio, receive text. For custom transcription servers on your network."
-            ) {
-                selectedType = .tcp
+            Divider()
+
+            // Custom options
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Custom")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .padding(.leading, 4)
+
+                TypeSelectionButton(
+                    emoji: "\u{1F310}",
+                    title: "Custom API Endpoint",
+                    subtitle: "Any OpenAI-compatible Whisper API"
+                ) {
+                    selectedType = .api
+                }
+
+                TypeSelectionButton(
+                    emoji: "\u{1F50C}",
+                    title: "Custom TCP Socket",
+                    subtitle: "Direct TCP connection for custom servers"
+                ) {
+                    selectedType = .tcp
+                }
             }
 
             Spacer()
@@ -52,7 +117,7 @@ struct BackendWizardView: View {
                 Spacer()
                 Button("Cancel") { dismiss() }
             }
-            .padding()
+            .padding(.top, 8)
         }
         .padding()
     }
@@ -68,23 +133,25 @@ private struct TypeSelectionButton: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 12) {
-                Text(emoji).font(.title)
-                VStack(alignment: .leading, spacing: 2) {
+            HStack(spacing: 10) {
+                Text(emoji).font(.body)
+                VStack(alignment: .leading, spacing: 1) {
                     Text(title)
                         .fontWeight(.medium)
+                        .font(.system(size: 13))
                     Text(subtitle)
-                        .font(.caption)
+                        .font(.caption2)
                         .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.leading)
                 }
                 Spacer()
                 Image(systemName: "chevron.right")
+                    .font(.caption)
                     .foregroundStyle(.tertiary)
             }
-            .padding()
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
             .background(.quaternary)
-            .cornerRadius(8)
+            .cornerRadius(6)
         }
         .buttonStyle(.plain)
     }
@@ -96,6 +163,7 @@ struct BackendFormView: View {
     let type: BackendType
     @ObservedObject var store: BackendStore
     var existingBackend: BackendConfig?
+    var preset: APIPreset?
     var onDismiss: () -> Void
     var onBack: (() -> Void)?
 
@@ -106,10 +174,11 @@ struct BackendFormView: View {
     @State private var host: String = ""
     @State private var port: String = ""
 
-    init(type: BackendType, store: BackendStore, existingBackend: BackendConfig? = nil, onDismiss: @escaping () -> Void, onBack: (() -> Void)? = nil) {
+    init(type: BackendType, store: BackendStore, existingBackend: BackendConfig? = nil, preset: APIPreset? = nil, onDismiss: @escaping () -> Void, onBack: (() -> Void)? = nil) {
         self.type = type
         self.store = store
         self.existingBackend = existingBackend
+        self.preset = preset
         self.onDismiss = onDismiss
         self.onBack = onBack
 
@@ -120,6 +189,10 @@ struct BackendFormView: View {
             _host = State(initialValue: existing.host ?? "")
             _port = State(initialValue: existing.port.map { String($0) } ?? "")
             _apiKey = State(initialValue: KeychainHelper.get(forBackendID: existing.id) ?? "")
+        } else if let preset {
+            _name = State(initialValue: preset.name)
+            _baseURL = State(initialValue: preset.baseURL)
+            _model = State(initialValue: preset.model)
         }
     }
 

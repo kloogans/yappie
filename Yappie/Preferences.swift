@@ -165,6 +165,7 @@ struct BackendCardView: View {
     @ObservedObject var store: BackendStore
     let hasAPIKey: Bool
     let priorityLabel: String?
+    @State private var showEdit = false
 
     var body: some View {
         HStack(spacing: 12) {
@@ -189,6 +190,17 @@ struct BackendCardView: View {
 
             Spacer()
 
+            Button {
+                if let index = store.backends.firstIndex(where: { $0.id == backend.id }) {
+                    store.remove(at: index)
+                }
+            } label: {
+                Image(systemName: "trash")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.borderless)
+
             Toggle("", isOn: Binding(
                 get: { backend.enabled },
                 set: { newValue in
@@ -211,12 +223,20 @@ struct BackendCardView: View {
                         .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
                 )
         )
+        .onTapGesture(count: 2) {
+            showEdit = true
+        }
         .contextMenu {
+            Button("Edit...") { showEdit = true }
+            Divider()
             Button("Delete", role: .destructive) {
                 if let index = store.backends.firstIndex(where: { $0.id == backend.id }) {
                     store.remove(at: index)
                 }
             }
+        }
+        .sheet(isPresented: $showEdit) {
+            BackendEditView(backend: backend, store: store)
         }
     }
 
