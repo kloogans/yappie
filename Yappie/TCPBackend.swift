@@ -20,6 +20,22 @@ final class TCPBackend: TranscriptionBackend {
     }
 
     func transcribe(wavData: Data) async throws -> String {
+        try await withThrowingTaskGroup(of: String.self) { group in
+            group.addTask {
+                try await self.connectAndTranscribe(wavData: wavData)
+            }
+            group.addTask {
+                try await Task.sleep(for: .seconds(5))
+                throw TranscriptionError.connectionFailed("Connection timed out")
+            }
+
+            let result = try await group.next()!
+            group.cancelAll()
+            return result
+        }
+    }
+
+    private func connectAndTranscribe(wavData: Data) async throws -> String {
         let connection = NWConnection(
             host: NWEndpoint.Host(host),
             port: NWEndpoint.Port(rawValue: port)!,
@@ -35,6 +51,7 @@ final class TCPBackend: TranscriptionBackend {
                 guard !hasResumed else { lock.unlock(); return }
                 hasResumed = true
                 lock.unlock()
+                connection.cancel()
                 switch result {
                 case .success(let text): continuation.resume(returning: text)
                 case .failure(let error): continuation.resume(throwing: error)
@@ -45,7 +62,8 @@ final class TCPBackend: TranscriptionBackend {
                 switch state {
                 case .failed(let error):
                     resume(with: .failure(TranscriptionError.connectionFailed(error.localizedDescription)))
-                    connection.cancel()
+                case .cancelled:
+                    resume(with: .failure(TranscriptionError.connectionFailed("Connection cancelled")))
                 default:
                     break
                 }
@@ -56,13 +74,10 @@ final class TCPBackend: TranscriptionBackend {
             connection.send(content: wavData, contentContext: .finalMessage, isComplete: true, completion: .contentProcessed { error in
                 if let error {
                     resume(with: .failure(TranscriptionError.connectionFailed(error.localizedDescription)))
-                    connection.cancel()
                     return
                 }
 
                 self.readAll(connection) { data in
-                    connection.cancel()
-
                     guard let data, !data.isEmpty else {
                         resume(with: .failure(TranscriptionError.emptyResponse))
                         return
