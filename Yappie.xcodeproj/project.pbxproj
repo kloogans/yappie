@@ -1,0 +1,381 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3FD465D6D629247714A122DA /* YappieApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2646FCFEF3CB04BF2B9CEA /* YappieApp.swift */; };
+		5F5D796433405D20B985356D /* YappieTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297D79CE4DECF2145B95B7FA /* YappieTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		44A184B8D9C6FABBC37248C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 178C732C11AF61DF26F2B901 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6B14F61876A14854E1FB4210;
+			remoteInfo = Yappie;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0B58DD35181CE167F8EDFADF /* YappieTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YappieTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		297D79CE4DECF2145B95B7FA /* YappieTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YappieTests.swift; sourceTree = "<group>"; };
+		4D6FF41D4D350D7BA2CE49E5 /* Yappie.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yappie.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE2646FCFEF3CB04BF2B9CEA /* YappieApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YappieApp.swift; sourceTree = "<group>"; };
+		C9C4F3252BDEBA6D57592F7D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		16F049780B1CDE127F421A68 = {
+			isa = PBXGroup;
+			children = (
+				53306B660425AB2A0DB22E87 /* Yappie */,
+				80BAC55B4B936C39873CFA32 /* YappieTests */,
+				C5425E3CEF1536E3A32E32DA /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		53306B660425AB2A0DB22E87 /* Yappie */ = {
+			isa = PBXGroup;
+			children = (
+				C9C4F3252BDEBA6D57592F7D /* Info.plist */,
+				BE2646FCFEF3CB04BF2B9CEA /* YappieApp.swift */,
+			);
+			path = Yappie;
+			sourceTree = "<group>";
+		};
+		80BAC55B4B936C39873CFA32 /* YappieTests */ = {
+			isa = PBXGroup;
+			children = (
+				297D79CE4DECF2145B95B7FA /* YappieTests.swift */,
+			);
+			path = YappieTests;
+			sourceTree = "<group>";
+		};
+		C5425E3CEF1536E3A32E32DA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4D6FF41D4D350D7BA2CE49E5 /* Yappie.app */,
+				0B58DD35181CE167F8EDFADF /* YappieTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6B14F61876A14854E1FB4210 /* Yappie */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8F6BDFF5FC5F438D0841C049 /* Build configuration list for PBXNativeTarget "Yappie" */;
+			buildPhases = (
+				EAF49703F976CB95DC2F4FDA /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Yappie;
+			packageProductDependencies = (
+			);
+			productName = Yappie;
+			productReference = 4D6FF41D4D350D7BA2CE49E5 /* Yappie.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A9BBCF039C03F828103B948B /* YappieTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 858D457F01FC1B0893E7DA57 /* Build configuration list for PBXNativeTarget "YappieTests" */;
+			buildPhases = (
+				45C2DAB7705B86502C866597 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				31812BD6DF1E8FEB6B854F65 /* PBXTargetDependency */,
+			);
+			name = YappieTests;
+			packageProductDependencies = (
+			);
+			productName = YappieTests;
+			productReference = 0B58DD35181CE167F8EDFADF /* YappieTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		178C732C11AF61DF26F2B901 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 17CF7ED205E37118155F7748 /* Build configuration list for PBXProject "Yappie" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 16F049780B1CDE127F421A68;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = C5425E3CEF1536E3A32E32DA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6B14F61876A14854E1FB4210 /* Yappie */,
+				A9BBCF039C03F828103B948B /* YappieTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		45C2DAB7705B86502C866597 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5F5D796433405D20B985356D /* YappieTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EAF49703F976CB95DC2F4FDA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3FD465D6D629247714A122DA /* YappieApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		31812BD6DF1E8FEB6B854F65 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6B14F61876A14854E1FB4210 /* Yappie */;
+			targetProxy = 44A184B8D9C6FABBC37248C8 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1B07F85EA1149942A0DF6E16 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Yappie/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kloogans.Yappie;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		259020C357D20A4F2A98077F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		5F4D3203D4D907F173402805 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kloogans.YappieTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Yappie.app/Contents/MacOS/Yappie";
+			};
+			name = Debug;
+		};
+		925E2C87C66E50C0FE5A3151 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Yappie/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kloogans.Yappie;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		B170A8FF7075EFB2794D4F62 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		E3157E17B5CA275CCA815B9C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kloogans.YappieTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Yappie.app/Contents/MacOS/Yappie";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		17CF7ED205E37118155F7748 /* Build configuration list for PBXProject "Yappie" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				259020C357D20A4F2A98077F /* Debug */,
+				B170A8FF7075EFB2794D4F62 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		858D457F01FC1B0893E7DA57 /* Build configuration list for PBXNativeTarget "YappieTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5F4D3203D4D907F173402805 /* Debug */,
+				E3157E17B5CA275CCA815B9C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		8F6BDFF5FC5F438D0841C049 /* Build configuration list for PBXNativeTarget "Yappie" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1B07F85EA1149942A0DF6E16 /* Debug */,
+				925E2C87C66E50C0FE5A3151 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 178C732C11AF61DF26F2B901 /* Project object */;
+}

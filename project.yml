@@ -1,0 +1,21 @@
+name: Yappie
+options:
+  bundleIdPrefix: com.kloogans
+  deploymentTarget:
+    macOS: "14.0"
+targets:
+  Yappie:
+    type: application
+    platform: macOS
+    sources: [Yappie]
+    info:
+      path: Yappie/Info.plist
+    settings:
+      INFOPLIST_FILE: Yappie/Info.plist
+      GENERATE_INFOPLIST_FILE: false
+  YappieTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources: [YappieTests]
+    dependencies:
+      - target: Yappie
