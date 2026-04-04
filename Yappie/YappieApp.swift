@@ -5,6 +5,7 @@ import AVFoundation
 @main
 struct YappieApp: App {
     @StateObject private var appState = AppState()
+    @StateObject private var prefsWindowController = PreferencesWindowController()
 
     var body: some Scene {
         MenuBarExtra("Yappie", systemImage: appState.statusIcon) {
@@ -15,8 +16,7 @@ struct YappieApp: App {
             Divider()
 
             Button("Preferences…") {
-                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
-                NSApp.activate(ignoringOtherApps: true)
+                prefsWindowController.show()
             }
             .keyboardShortcut(",", modifiers: .command)
 
@@ -27,15 +27,9 @@ struct YappieApp: App {
             }
             .keyboardShortcut("q", modifiers: .command)
         }
-
-        Settings {
-            PreferencesView()
-                .environmentObject(appState)
-        }
     }
 
     init() {
-        // Request mic permission — triggers system dialog on first launch
         switch AVCaptureDevice.authorizationStatus(for: .audio) {
         case .notDetermined:
             AVCaptureDevice.requestAccess(for: .audio) { granted in
@@ -44,10 +38,40 @@ struct YappieApp: App {
         case .denied, .restricted:
             NSLog("[Yappie] Mic permission denied — user must enable in System Settings")
         case .authorized:
-            NSLog("[Yappie] Mic permission already granted")
+            break
         @unknown default:
             break
         }
         _ = TextDelivery.checkAccessibility(prompt: true)
+    }
+}
+
+final class PreferencesWindowController: ObservableObject {
+    private var window: NSWindow?
+
+    func show() {
+        if let window, window.isVisible {
+            window.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+
+        let prefsView = PreferencesView()
+        let hostingView = NSHostingView(rootView: prefsView)
+        hostingView.frame = NSRect(x: 0, y: 0, width: 400, height: 220)
+
+        let window = NSWindow(
+            contentRect: hostingView.frame,
+            styleMask: [.titled, .closable],
+            backing: .buffered,
+            defer: false
+        )
+        window.title = "Yappie Preferences"
+        window.contentView = hostingView
+        window.center()
+        window.isReleasedWhenClosed = false
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+        self.window = window
     }
 }
