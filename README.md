@@ -45,12 +45,13 @@ make run
 
 ### Permissions
 
-On first launch, macOS will ask for two permissions:
+Yappie needs two macOS permissions to work:
 
-- **Microphone** - you'll get a system dialog automatically
-- **Accessibility** - needed for the auto-paste feature. Go to System Settings > Privacy & Security > Accessibility and add Yappie
+**Microphone** - You should get a system dialog on first launch. If you don't, go to System Settings > Privacy & Security > Microphone and add Yappie manually.
 
-If you skip the Accessibility permission, Yappie will still work but you'll need to paste manually with Cmd+V.
+**Accessibility** - Needed for auto-paste. Go to System Settings > Privacy & Security > Accessibility, click the + button, and add Yappie. Without this, Yappie will still transcribe but you'll need to paste manually with Cmd+V.
+
+> **Note:** If you installed via Homebrew and macOS blocks the app or permissions aren't working, try running `xattr -dr com.apple.quarantine /Applications/Yappie.app` in your terminal, then relaunch.
 
 ## How to use
 
