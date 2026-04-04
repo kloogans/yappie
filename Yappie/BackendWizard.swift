@@ -18,7 +18,7 @@ struct BackendWizardView: View {
                 BackendFormView(
                     type: selectedType,
                     store: store,
-                    onSave: { dismiss() },
+                    onDismiss: { dismiss() },
                     onBack: { self.selectedType = nil }
                 )
             } else {
@@ -30,51 +30,21 @@ struct BackendWizardView: View {
 
     private var typeSelectionView: some View {
         VStack(spacing: 12) {
-            Button {
+            TypeSelectionButton(
+                emoji: "\u{1F310}",
+                title: "OpenAI-Compatible API",
+                subtitle: "Works with OpenAI, Groq, Together AI, local servers like faster-whisper-server, and any service implementing the Whisper API."
+            ) {
                 selectedType = .api
-            } label: {
-                HStack(spacing: 12) {
-                    Text("🌐").font(.title)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("OpenAI-Compatible API")
-                            .fontWeight(.medium)
-                        Text("Works with OpenAI, Groq, Together AI, local servers like faster-whisper-server, and any service implementing the Whisper API.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.leading)
-                    }
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .foregroundStyle(.tertiary)
-                }
-                .padding()
-                .background(.quaternary)
-                .cornerRadius(8)
             }
-            .buttonStyle(.plain)
 
-            Button {
+            TypeSelectionButton(
+                emoji: "\u{1F50C}",
+                title: "Custom TCP Socket",
+                subtitle: "Direct TCP connection \u{2014} send WAV audio, receive text. For custom transcription servers on your network."
+            ) {
                 selectedType = .tcp
-            } label: {
-                HStack(spacing: 12) {
-                    Text("🔌").font(.title)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Custom TCP Socket")
-                            .fontWeight(.medium)
-                        Text("Direct TCP connection — send WAV audio, receive text. For custom transcription servers on your network.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.leading)
-                    }
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .foregroundStyle(.tertiary)
-                }
-                .padding()
-                .background(.quaternary)
-                .cornerRadius(8)
             }
-            .buttonStyle(.plain)
 
             Spacer()
 
@@ -88,13 +58,45 @@ struct BackendWizardView: View {
     }
 }
 
+// MARK: - Type Selection Button
+
+private struct TypeSelectionButton: View {
+    let emoji: String
+    let title: String
+    let subtitle: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Text(emoji).font(.title)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .fontWeight(.medium)
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.leading)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .foregroundStyle(.tertiary)
+            }
+            .padding()
+            .background(.quaternary)
+            .cornerRadius(8)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 // MARK: - Backend Form (shared by Add and Edit)
 
 struct BackendFormView: View {
     let type: BackendType
     @ObservedObject var store: BackendStore
     var existingBackend: BackendConfig?
-    var onSave: () -> Void
+    var onDismiss: () -> Void
     var onBack: (() -> Void)?
 
     @State private var name: String = ""
@@ -104,11 +106,11 @@ struct BackendFormView: View {
     @State private var host: String = ""
     @State private var port: String = ""
 
-    init(type: BackendType, store: BackendStore, existingBackend: BackendConfig? = nil, onSave: @escaping () -> Void, onBack: (() -> Void)? = nil) {
+    init(type: BackendType, store: BackendStore, existingBackend: BackendConfig? = nil, onDismiss: @escaping () -> Void, onBack: (() -> Void)? = nil) {
         self.type = type
         self.store = store
         self.existingBackend = existingBackend
-        self.onSave = onSave
+        self.onDismiss = onDismiss
         self.onBack = onBack
 
         if let existing = existingBackend {
@@ -143,7 +145,7 @@ struct BackendFormView: View {
                 Button("Back") { onBack() }
             }
             Spacer()
-            Button("Cancel") { onSave() }
+            Button("Cancel") { onDismiss() }
             Button(existingBackend == nil ? "Add" : "Save") {
                 save()
             }
@@ -186,7 +188,7 @@ struct BackendFormView: View {
             store.add(config)
         }
 
-        onSave()
+        onDismiss()
     }
 }
 
@@ -207,7 +209,7 @@ struct BackendEditView: View {
                 type: backend.type,
                 store: store,
                 existingBackend: backend,
-                onSave: { dismiss() }
+                onDismiss: { dismiss() }
             )
         }
         .frame(width: 420, height: 300)

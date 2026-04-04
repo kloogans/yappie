@@ -4,6 +4,7 @@ import Foundation
 final class APIBackend: TranscriptionBackend {
     private let config: BackendConfig
     private let apiKey: String?
+    private static let decoder = JSONDecoder()
 
     init(config: BackendConfig) {
         self.config = config
@@ -67,7 +68,7 @@ final class APIBackend: TranscriptionBackend {
     }
 
     static func parseResponse(data: Data) throws -> String {
-        if let json = try? JSONDecoder().decode(WhisperResponse.self, from: data) {
+        if let json = try? Self.decoder.decode(WhisperResponse.self, from: data) {
             return json.text.trimmingCharacters(in: .whitespacesAndNewlines)
         }
         guard let text = String(data: data, encoding: .utf8) else {

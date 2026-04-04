@@ -35,10 +35,12 @@ struct BackendConfig: Codable, Identifiable {
 
 // MARK: - Persistence
 
-class BackendStore: ObservableObject {
+final class BackendStore: ObservableObject {
     @Published var backends: [BackendConfig] = []
 
     private let key = "backends"
+    private static let encoder = JSONEncoder()
+    private static let decoder = JSONDecoder()
 
     init() {
         load()
@@ -46,7 +48,7 @@ class BackendStore: ObservableObject {
 
     func load() {
         guard let data = UserDefaults.standard.data(forKey: key),
-              let decoded = try? JSONDecoder().decode([BackendConfig].self, from: data) else {
+              let decoded = try? Self.decoder.decode([BackendConfig].self, from: data) else {
             backends = []
             return
         }
@@ -54,7 +56,7 @@ class BackendStore: ObservableObject {
     }
 
     func save() {
-        guard let data = try? JSONEncoder().encode(backends) else { return }
+        guard let data = try? Self.encoder.encode(backends) else { return }
         UserDefaults.standard.set(data, forKey: key)
     }
 

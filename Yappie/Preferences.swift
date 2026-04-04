@@ -6,6 +6,7 @@ struct PreferencesView: View {
     @AppStorage("recordingMode") private var recordingMode: RecordingMode = .pushToTalk
     @AppStorage("deliveryMode") private var deliveryMode: DeliveryMode = .clipboardAndPaste
     @ObservedObject var backendStore: BackendStore
+    @State private var showAddWizard = false
 
     var body: some View {
         TabView {
@@ -84,8 +85,6 @@ struct PreferencesView: View {
 
     // MARK: - Backends Tab
 
-    @State private var showAddWizard = false
-
     private var backendsTab: some View {
         VStack(spacing: 0) {
             // Header
@@ -117,9 +116,22 @@ struct PreferencesView: View {
                 Spacer()
             } else {
                 ScrollView {
+                    let enabledBackends = backendStore.backends.filter { $0.enabled }
                     VStack(spacing: 8) {
                         ForEach(backendStore.backends) { backend in
-                            BackendCardView(backend: backend, store: backendStore)
+                            let hasAPIKey = KeychainHelper.get(forBackendID: backend.id) != nil
+                            let priorityLabel: String? = {
+                                guard backend.enabled,
+                                      let position = enabledBackends.firstIndex(where: { $0.id == backend.id })
+                                else { return nil }
+                                return position == enabledBackends.startIndex ? "PRIMARY" : "FALLBACK"
+                            }()
+                            BackendCardView(
+                                backend: backend,
+                                store: backendStore,
+                                hasAPIKey: hasAPIKey,
+                                priorityLabel: priorityLabel
+                            )
                         }
                     }
                     .padding(.horizontal, 20)
@@ -151,6 +163,8 @@ struct PreferencesView: View {
 struct BackendCardView: View {
     let backend: BackendConfig
     @ObservedObject var store: BackendStore
+    let hasAPIKey: Bool
+    let priorityLabel: String?
 
     var body: some View {
         HStack(spacing: 12) {
@@ -211,7 +225,6 @@ struct BackendCardView: View {
         case .api:
             var parts = [String]()
             if let url = backend.baseURL, !url.isEmpty {
-                // Show just the host portion for cleanliness
                 if let parsed = URL(string: url) {
                     parts.append(parsed.host ?? url)
                 } else {
@@ -221,7 +234,7 @@ struct BackendCardView: View {
             if let model = backend.model, !model.isEmpty {
                 parts.append(model)
             }
-            if KeychainHelper.get(forBackendID: backend.id) != nil {
+            if hasAPIKey {
                 parts.append("API key set")
             }
             return parts.joined(separator: " \u{00B7} ")
@@ -232,17 +245,14 @@ struct BackendCardView: View {
 
     @ViewBuilder
     private var priorityBadge: some View {
-        let enabledBackends = store.backends.filter { $0.enabled }
-        let position = enabledBackends.firstIndex(where: { $0.id == backend.id })
-
-        if let position, backend.enabled {
-            Text(position == 0 ? "PRIMARY" : "FALLBACK")
+        if let priorityLabel {
+            Text(priorityLabel)
                 .font(.system(size: 9, weight: .bold, design: .rounded))
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
                 .background(
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(position == 0 ? Color.green : Color.gray.opacity(0.6))
+                        .fill(priorityLabel == "PRIMARY" ? Color.green : Color.gray.opacity(0.6))
                 )
                 .foregroundColor(.white)
         }

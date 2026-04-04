@@ -1,5 +1,7 @@
 // Yappie/AppState.swift
 import SwiftUI
+import UserNotifications
+import Combine
 
 enum RecordingMode: String {
     case pushToTalk = "push-to-talk"
@@ -25,6 +27,9 @@ final class AppState: ObservableObject {
     private let hotkeyManager = HotkeyManager()
     private var hasShownFallbackNotice = false
     private var durationTimer: Timer?
+    private var lastAppliedMode: RecordingMode?
+    private var cachedManager: BackendManager?
+    private var cancellables = Set<AnyCancellable>()
 
     var statusIcon: String {
         switch status {
@@ -60,9 +65,19 @@ final class AppState: ObservableObject {
         ) { [weak self] _ in
             self?.applyRecordingMode()
         }
+
+        // Invalidate cached BackendManager when backends change
+        backendStore.$backends
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.cachedManager = nil
+            }
+            .store(in: &cancellables)
     }
 
     func applyRecordingMode() {
+        guard recordingMode != lastAppliedMode else { return }
+        lastAppliedMode = recordingMode
         hotkeyManager.stopFnMonitor()
         hotkeyManager.unregisterToggleHotkey()
 
@@ -97,7 +112,8 @@ final class AppState: ObservableObject {
 
         Task { @MainActor in
             do {
-                let manager = BackendManager(store: backendStore)
+                let manager = cachedManager ?? BackendManager(store: backendStore)
+                cachedManager = manager
                 let result = try await manager.transcribe(wavData: wavData)
 
                 if result.backendIndex > 0 && !hasShownFallbackNotice {
@@ -127,9 +143,10 @@ final class AppState: ObservableObject {
     }
 
     private func showNotification(title: String, body: String) {
-        let notification = NSUserNotification()
-        notification.title = title
-        notification.informativeText = body
-        NSUserNotificationCenter.default.deliver(notification)
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request)
     }
 }

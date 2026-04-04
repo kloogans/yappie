@@ -8,7 +8,7 @@ struct YappieApp: App {
     @StateObject private var prefsWindowController = PreferencesWindowController()
 
     var body: some Scene {
-        MenuBarExtra("Yappie", systemImage: appState.statusIcon) {
+        MenuBarExtra("Yappie", image: "MenuBarIcon") {
             Button("Toggle Recording") {
                 appState.toggleRecording()
             }
