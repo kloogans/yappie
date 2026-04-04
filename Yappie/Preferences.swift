@@ -14,28 +14,55 @@ struct PreferencesView: View {
             backendsTab
                 .tabItem { Label("Backends", systemImage: "server.rack") }
         }
-        .frame(width: 500, height: 380)
+        .frame(width: 520, height: 400)
     }
 
     // MARK: - General Tab
 
     private var generalTab: some View {
-        Form {
-            Picker("Recording mode", selection: $recordingMode) {
-                Text("Push-to-Talk (hold Fn)").tag(RecordingMode.pushToTalk)
-                Text("Toggle (click menubar)").tag(RecordingMode.toggle)
-            }
-            .pickerStyle(.radioGroup)
+        VStack(alignment: .leading, spacing: 20) {
+            // Recording section
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Recording", systemImage: "mic.fill")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(.secondary)
 
-            Picker("After transcription", selection: $deliveryMode) {
-                Text("Copy & paste").tag(DeliveryMode.clipboardAndPaste)
-                Text("Copy to clipboard only").tag(DeliveryMode.clipboardOnly)
+                Picker("Recording mode", selection: $recordingMode) {
+                    Text("Push-to-Talk (hold Fn)").tag(RecordingMode.pushToTalk)
+                    Text("Toggle (click menubar)").tag(RecordingMode.toggle)
+                }
+                .pickerStyle(.radioGroup)
             }
-            .pickerStyle(.radioGroup)
 
-            Toggle("Launch at login", isOn: launchAtLoginBinding)
+            Divider()
+
+            // Output section
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Output", systemImage: "doc.on.clipboard")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(.secondary)
+
+                Picker("After transcription", selection: $deliveryMode) {
+                    Text("Copy & paste").tag(DeliveryMode.clipboardAndPaste)
+                    Text("Copy to clipboard only").tag(DeliveryMode.clipboardOnly)
+                }
+                .pickerStyle(.radioGroup)
+            }
+
+            Divider()
+
+            // System section
+            VStack(alignment: .leading, spacing: 8) {
+                Label("System", systemImage: "gearshape")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(.secondary)
+
+                Toggle("Launch at login", isOn: launchAtLoginBinding)
+            }
+
+            Spacer()
         }
-        .padding()
+        .padding(24)
     }
 
     private var launchAtLoginBinding: Binding<Bool> {
@@ -60,34 +87,58 @@ struct PreferencesView: View {
     @State private var showAddWizard = false
 
     private var backendsTab: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Transcription Backends")
-                .font(.headline)
-                .padding(.horizontal)
+        VStack(spacing: 0) {
+            // Header
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Transcription Backends")
+                    .font(.headline)
+                Text("Backends are tried in order. If the first fails, the next one is used automatically.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 20)
+            .padding(.top, 16)
+            .padding(.bottom, 12)
 
-            Text("Backends are tried in order. If the first fails, the next one is used automatically.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal)
-
-            List {
-                ForEach(backendStore.backends) { backend in
-                    BackendCardView(backend: backend, store: backendStore)
+            // Backend list or empty state
+            if backendStore.backends.isEmpty {
+                Spacer()
+                VStack(spacing: 12) {
+                    Image(systemName: "server.rack")
+                        .font(.system(size: 32))
+                        .foregroundStyle(.tertiary)
+                    Text("No backends configured")
+                        .foregroundStyle(.secondary)
+                    Text("Add a backend to start transcribing.")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
                 }
-                .onMove { source, dest in
-                    backendStore.move(from: source, to: dest)
+                Spacer()
+            } else {
+                ScrollView {
+                    VStack(spacing: 8) {
+                        ForEach(backendStore.backends) { backend in
+                            BackendCardView(backend: backend, store: backendStore)
+                        }
+                    }
+                    .padding(.horizontal, 20)
                 }
             }
-            .listStyle(.plain)
 
+            // Add button
+            Divider()
             HStack {
                 Spacer()
-                Button("Add Backend\u{2026}") {
+                Button {
                     showAddWizard = true
+                } label: {
+                    Label("Add Backend", systemImage: "plus.circle.fill")
                 }
+                .buttonStyle(.borderless)
+                .padding(12)
                 Spacer()
             }
-            .padding(.bottom, 8)
         }
         .sheet(isPresented: $showAddWizard) {
             BackendWizardView(store: backendStore)
@@ -103,23 +154,23 @@ struct BackendCardView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
+            // Type icon
+            Image(systemName: backend.type == .api ? "globe" : "network")
+                .font(.system(size: 16))
+                .foregroundStyle(backend.enabled ? .primary : .tertiary)
+                .frame(width: 24)
+
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 6) {
                     Text(backend.name)
                         .fontWeight(.medium)
+                        .foregroundStyle(backend.enabled ? .primary : .secondary)
                     priorityBadge
                 }
-                HStack(spacing: 6) {
-                    Text(backend.type == .api ? "API" : "TCP")
-                        .font(.caption2)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(.quaternary)
-                        .cornerRadius(3)
-                    Text(connectionDetail)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+                Text(connectionDetail)
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
             }
 
             Spacer()
@@ -133,9 +184,19 @@ struct BackendCardView: View {
                 }
             ))
             .toggleStyle(.switch)
+            .controlSize(.small)
             .labelsHidden()
         }
-        .padding(.vertical, 4)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(backend.enabled ? Color.primary.opacity(0.04) : Color.clear)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+                )
+        )
         .contextMenu {
             Button("Delete", role: .destructive) {
                 if let index = store.backends.firstIndex(where: { $0.id == backend.id }) {
@@ -148,10 +209,22 @@ struct BackendCardView: View {
     private var connectionDetail: String {
         switch backend.type {
         case .api:
-            let url = backend.baseURL ?? ""
-            let model = backend.model.map { " \u{00B7} \($0)" } ?? ""
-            let key = KeychainHelper.get(forBackendID: backend.id) != nil ? " \u{00B7} \u{2022}\u{2022}\u{2022}\u{2022}" : ""
-            return "\(url)\(model)\(key)"
+            var parts = [String]()
+            if let url = backend.baseURL, !url.isEmpty {
+                // Show just the host portion for cleanliness
+                if let parsed = URL(string: url) {
+                    parts.append(parsed.host ?? url)
+                } else {
+                    parts.append(url)
+                }
+            }
+            if let model = backend.model, !model.isEmpty {
+                parts.append(model)
+            }
+            if KeychainHelper.get(forBackendID: backend.id) != nil {
+                parts.append("API key set")
+            }
+            return parts.joined(separator: " \u{00B7} ")
         case .tcp:
             return "\(backend.host ?? ""):\(backend.port ?? 0)"
         }
@@ -164,12 +237,14 @@ struct BackendCardView: View {
 
         if let position, backend.enabled {
             Text(position == 0 ? "PRIMARY" : "FALLBACK")
-                .font(.system(size: 9, weight: .semibold))
+                .font(.system(size: 9, weight: .bold, design: .rounded))
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
-                .background(position == 0 ? Color.green : Color.gray)
+                .background(
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(position == 0 ? Color.green : Color.gray.opacity(0.6))
+                )
                 .foregroundColor(.white)
-                .cornerRadius(3)
         }
     }
 }
