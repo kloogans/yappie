@@ -17,6 +17,8 @@ targets:
       INFOPLIST_FILE: Yappie/Info.plist
       GENERATE_INFOPLIST_FILE: false
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+      CODE_SIGN_IDENTITY: "Yappie Development"
+      CODE_SIGN_STYLE: Manual
   YappieTests:
     type: bundle.unit-test
     platform: macOS
