@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0555C30D9BD50290A2F6616A /* BackendConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EAF3A78D7EA72EF360F9CB /* BackendConfigTests.swift */; };
+		0E6A4D444C9609AB3733AD4B /* yappie-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 60F828B0D369289846BD54EC /* yappie-logo.png */; };
 		1DD86F271BDF8C10EEBE5200 /* APIBackendTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25E75F4CDA6FCE2A547C5627 /* APIBackendTests.swift */; };
 		29A7E5DD71DF7738A4C96EE1 /* TranscriptionBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9CF375620703B7140FE0B09 /* TranscriptionBackend.swift */; };
 		29A8F32071442057C6C7B97C /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C8AF58300A051F2E3C91436 /* AudioRecorder.swift */; };
@@ -50,6 +51,7 @@
 		4D6FF41D4D350D7BA2CE49E5 /* Yappie.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yappie.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		51DB11B3EC1C2D7CD49724A5 /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
 		5F05B11A4FF80336D6301BE7 /* yappie-logo.svg */ = {isa = PBXFileReference; path = "yappie-logo.svg"; sourceTree = "<group>"; };
+		60F828B0D369289846BD54EC /* yappie-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "yappie-logo.png"; sourceTree = "<group>"; };
 		85EAF3A78D7EA72EF360F9CB /* BackendConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendConfigTests.swift; sourceTree = "<group>"; };
 		8659DA66CD5A72C5B348C6FF /* BackendWizard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendWizard.swift; sourceTree = "<group>"; };
 		867BC64A19693BFF9DCB0A61 /* TranscriptionClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionClientTests.swift; sourceTree = "<group>"; };
@@ -136,6 +138,7 @@
 		F1E82792DCCCE75C725FF3C7 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				60F828B0D369289846BD54EC /* yappie-logo.png */,
 				5F05B11A4FF80336D6301BE7 /* yappie-logo.svg */,
 			);
 			path = Assets;
@@ -219,6 +222,7 @@
 				594F9567F414CE3652C90DE8 /* Assets.xcassets in Resources */,
 				5531C779351837D57CFA8990 /* knock_start.wav in Resources */,
 				575955EE7345CBD1F6599710 /* knock_stop.wav in Resources */,
+				0E6A4D444C9609AB3733AD4B /* yappie-logo.png in Resources */,
 				8A9ACCB0A945B316B494651B /* yappie-logo.svg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
