@@ -2,9 +2,7 @@
 
 Fast dictation for macOS. Hold a key, speak, release, and the transcribed text gets pasted into whatever app you're using.
 
-Yappie is a lightweight menubar app that sends audio to a remote [Whisper](https://github.com/openai/whisper) server for transcription. The model runs on your GPU-equipped machine, so transcriptions are fast and free.
-
-Designed as a macOS companion to [hypr-dictate](https://github.com/kloogans/hypr-dictate), which provides the same workflow on Hyprland/Linux.
+Yappie is a lightweight menubar app that sends audio to a speech-to-text server for transcription. It works with any OpenAI-compatible API (OpenAI, Groq, local Whisper servers) or custom TCP endpoints.
 
 ## How it works
 
@@ -17,7 +15,9 @@ Or use **toggle mode**: click the menubar icon to start, click again to stop.
 ## Requirements
 
 - macOS 14+
-- A running [hypr-dictate-server](https://github.com/kloogans/hypr-dictate) instance with TCP enabled (port 9876 by default)
+- A transcription backend — either:
+  - An OpenAI-compatible API endpoint (OpenAI, Groq, local faster-whisper-server, etc.)
+  - A custom TCP transcription server
 
 ## Install
 
@@ -37,9 +37,22 @@ make run
 
 ## Configuration
 
-Open **Preferences** from the menubar icon:
+Open **Preferences** from the menubar icon.
 
-- **Server** — IP and port of your hypr-dictate-server
+### Backends
+
+Add one or more transcription backends. Yappie tries them in order — if the first fails, it automatically falls back to the next.
+
+**OpenAI-Compatible API** — works with any service implementing the Whisper API format:
+- [OpenAI](https://platform.openai.com) — `https://api.openai.com/v1` with your API key
+- [Groq](https://groq.com) — `https://api.groq.com/openai/v1` with your API key
+- [faster-whisper-server](https://github.com/fedirz/faster-whisper-server) — `http://your-server:8000/v1` (no API key needed)
+- Any OpenAI-compatible endpoint
+
+**Custom TCP** — direct socket connection for custom servers like [hypr-dictate](https://github.com/kloogans/hypr-dictate).
+
+### General
+
 - **Recording mode** — Push-to-talk (hold Fn) or toggle
 - **After transcription** — Paste automatically or just copy to clipboard
 - **Launch at login** — Start Yappie when you log in
@@ -50,16 +63,6 @@ Yappie needs two macOS permissions:
 
 - **Microphone** — prompted automatically on first use
 - **Accessibility** — needed for auto-paste (System Settings → Privacy & Security → Accessibility)
-
-## Server setup
-
-Yappie connects to [hypr-dictate-server](https://github.com/kloogans/hypr-dictate)'s TCP interface. Install hypr-dictate on a machine with a GPU, then make sure the server is running and accessible on your network.
-
-The server listens on port 9876 by default. You can change this in `~/.config/hypr-dictate/config` on the server machine:
-
-```bash
-TCP_PORT=9876
-```
 
 ## License
 
