@@ -73,7 +73,7 @@ final class AppState: ObservableObject {
                 }
             }
         } catch {
-            print("Recording failed: \(error)")
+            NSLog("[Yappie] Recording failed: %@", "\(error)")
         }
     }
 
@@ -95,7 +95,7 @@ final class AppState: ObservableObject {
                 let mode = DeliveryMode(rawValue: deliveryMode) ?? .clipboardAndPaste
                 TextDelivery.deliver(text, mode: mode)
             } catch {
-                print("Transcription failed: \(error)")
+                NSLog("[Yappie] Transcription failed: %@", "\(error)")
             }
             status = .idle
         }
