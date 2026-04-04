@@ -15,6 +15,7 @@
 		9D3D7B498BCFE6285C15FF1E /* WAVEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE4205EA30A135F5B4A21F81 /* WAVEncoder.swift */; };
 		B7B6BC8DDFA9B7C6656E3F7C /* TextDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485A1CB8C2C7F718F6172DA5 /* TextDelivery.swift */; };
 		BF55640D266C9A1886370A42 /* TranscriptionClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867BC64A19693BFF9DCB0A61 /* TranscriptionClientTests.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E1D0C9B8A7F6E5D4C3B2A1 /* HotkeyManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +39,7 @@
 		BE2646FCFEF3CB04BF2B9CEA /* YappieApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YappieApp.swift; sourceTree = "<group>"; };
 		C9C4F3252BDEBA6D57592F7D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		EE4205EA30A135F5B4A21F81 /* WAVEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WAVEncoder.swift; sourceTree = "<group>"; };
+		F2E1D0C9B8A7F6E5D4C3B2A1 /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
 		FDB2C6A506BFFAD32A38440D /* WAVEncoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WAVEncoderTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -55,6 +57,7 @@
 			isa = PBXGroup;
 			children = (
 				9C8AF58300A051F2E3C91436 /* AudioRecorder.swift */,
+				F2E1D0C9B8A7F6E5D4C3B2A1 /* HotkeyManager.swift */,
 				C9C4F3252BDEBA6D57592F7D /* Info.plist */,
 				485A1CB8C2C7F718F6172DA5 /* TextDelivery.swift */,
 				2CFA5ADF0C650588D2C16F71 /* TranscriptionClient.swift */,
@@ -168,6 +171,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				29A8F32071442057C6C7B97C /* AudioRecorder.swift in Sources */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* HotkeyManager.swift in Sources */,
 				B7B6BC8DDFA9B7C6656E3F7C /* TextDelivery.swift in Sources */,
 				341493FAB1E63575395BEEC5 /* TranscriptionClient.swift in Sources */,
 				9D3D7B498BCFE6285C15FF1E /* WAVEncoder.swift in Sources */,
