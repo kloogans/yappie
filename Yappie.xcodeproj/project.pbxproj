@@ -17,6 +17,7 @@
 		B7B6BC8DDFA9B7C6656E3F7C /* TextDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485A1CB8C2C7F718F6172DA5 /* TextDelivery.swift */; };
 		BF55640D266C9A1886370A42 /* TranscriptionClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867BC64A19693BFF9DCB0A61 /* TranscriptionClientTests.swift */; };
 		E5EE08F65CA6474DACC386C0 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DB11B3EC1C2D7CD49724A5 /* HotkeyManager.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A7B8C9D0E1F2A3 /* Preferences.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +44,7 @@
 		EE4205EA30A135F5B4A21F81 /* WAVEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WAVEncoder.swift; sourceTree = "<group>"; };
 		FDB2C6A506BFFAD32A38440D /* WAVEncoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WAVEncoderTests.swift; sourceTree = "<group>"; };
 		FDD58328E7B5AEC543A2DBFD /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		B2C3D4E5F6A7B8C9D0E1F2A3 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -62,6 +64,7 @@
 				9C8AF58300A051F2E3C91436 /* AudioRecorder.swift */,
 				51DB11B3EC1C2D7CD49724A5 /* HotkeyManager.swift */,
 				C9C4F3252BDEBA6D57592F7D /* Info.plist */,
+				B2C3D4E5F6A7B8C9D0E1F2A3 /* Preferences.swift */,
 				485A1CB8C2C7F718F6172DA5 /* TextDelivery.swift */,
 				2CFA5ADF0C650588D2C16F71 /* TranscriptionClient.swift */,
 				EE4205EA30A135F5B4A21F81 /* WAVEncoder.swift */,
@@ -180,6 +183,7 @@
 				341493FAB1E63575395BEEC5 /* TranscriptionClient.swift in Sources */,
 				9D3D7B498BCFE6285C15FF1E /* WAVEncoder.swift in Sources */,
 				3FD465D6D629247714A122DA /* YappieApp.swift in Sources */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* Preferences.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

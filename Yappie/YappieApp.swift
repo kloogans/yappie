@@ -36,8 +36,7 @@ struct YappieApp: App {
         }
 
         Settings {
-            Text("Preferences placeholder")
-                .frame(width: 400, height: 300)
+            PreferencesView()
                 .environmentObject(appState)
         }
     }
