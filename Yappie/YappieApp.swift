@@ -16,6 +16,7 @@ struct YappieApp: App {
             Divider()
 
             Button("Preferences…") {
+                prefsWindowController.backendStore = appState.backendStore
                 prefsWindowController.show()
             }
             .keyboardShortcut(",", modifiers: .command)
@@ -48,6 +49,7 @@ struct YappieApp: App {
 
 final class PreferencesWindowController: ObservableObject {
     private var window: NSWindow?
+    var backendStore: BackendStore?
 
     func show() {
         if let window, window.isVisible {
@@ -56,9 +58,9 @@ final class PreferencesWindowController: ObservableObject {
             return
         }
 
-        let prefsView = PreferencesView()
+        let prefsView = PreferencesView(backendStore: backendStore ?? BackendStore())
         let hostingView = NSHostingView(rootView: prefsView)
-        hostingView.frame = NSRect(x: 0, y: 0, width: 400, height: 220)
+        hostingView.frame = NSRect(x: 0, y: 0, width: 500, height: 380)
 
         let window = NSWindow(
             contentRect: hostingView.frame,
