@@ -19,3 +19,5 @@ targets:
     sources: [YappieTests]
     dependencies:
       - target: Yappie
+    settings:
+      GENERATE_INFOPLIST_FILE: true
