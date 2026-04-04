@@ -2,7 +2,7 @@
 
 A native macOS menubar app that sends audio to a remote Whisper server for transcription.
 
-Companion to [hypr-dictate](https://github.com/kloogans/hypr-dictate), which provides the same workflow on Hyprland/Linux. Yappie connects to hypr-dictate-server's TCP interface — the model stays loaded on the remote GPU so transcriptions are fast.
+Companion to [Yappie for Linux](https://github.com/kloogans/yappie-linux), which provides the same workflow on Hyprland/Linux. Yappie connects to yappie-server's TCP interface — the model stays loaded on the remote GPU so transcriptions are fast.
 
 ## Core Interaction
 
@@ -41,7 +41,7 @@ Stored in standard macOS `UserDefaults` (plist). Exposed via a Preferences windo
 
 | Setting | Default | Description |
 |---|---|---|
-| Server host | `192.168.4.24` | IP or hostname of the hypr-dictate-server |
+| Server host | `192.168.4.24` | IP or hostname of the yappie-server |
 | Server port | `9876` | TCP port |
 | Recording mode | Push-to-talk | Push-to-talk (hold Fn) or toggle |
 | Hotkey | Fn | Configurable global hotkey |
@@ -75,7 +75,7 @@ yappie/
 
 ## Server Protocol
 
-The hypr-dictate-server TCP interface is simple:
+The yappie-server TCP interface is simple:
 
 1. Connect to `host:port` via TCP.
 2. Send the entire WAV file as raw bytes.
@@ -91,4 +91,4 @@ Single `.app` bundle. Clone and build with Xcode, or download a release binary f
 
 ## License
 
-MIT — matches hypr-dictate.
+MIT

@@ -78,7 +78,7 @@ API keys are stored in the macOS Keychain, not in plaintext config files.
 
 For custom transcription servers that accept raw audio over a TCP socket. You provide a host and port. Yappie sends the WAV audio data over the connection and reads back the transcribed text.
 
-This works with servers like [hypr-dictate](https://github.com/kloogans/hypr-dictate) and anything else that follows the same simple protocol: receive WAV bytes, respond with UTF-8 text.
+This works with [Yappie for Linux](https://github.com/kloogans/yappie-linux) and any other server that follows the same simple protocol: receive WAV bytes, respond with UTF-8 text.
 
 ## Preferences
 

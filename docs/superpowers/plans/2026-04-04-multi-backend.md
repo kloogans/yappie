@@ -1697,7 +1697,7 @@ Add one or more transcription backends. Yappie tries them in order — if the fi
 - [faster-whisper-server](https://github.com/fedirz/faster-whisper-server) — `http://your-server:8000/v1` (no API key needed)
 - Any OpenAI-compatible endpoint
 
-**Custom TCP** — direct socket connection for custom servers like [hypr-dictate](https://github.com/kloogans/hypr-dictate).
+**Custom TCP** — direct socket connection for custom servers like [Yappie for Linux](https://github.com/kloogans/yappie-linux).
 
 ### General
 
