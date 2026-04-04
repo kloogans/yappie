@@ -10,9 +10,12 @@
 		29A8F32071442057C6C7B97C /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C8AF58300A051F2E3C91436 /* AudioRecorder.swift */; };
 		341493FAB1E63575395BEEC5 /* TranscriptionClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CFA5ADF0C650588D2C16F71 /* TranscriptionClient.swift */; };
 		3FD465D6D629247714A122DA /* YappieApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2646FCFEF3CB04BF2B9CEA /* YappieApp.swift */; };
+		5531C779351837D57CFA8990 /* knock_start.wav in Resources */ = {isa = PBXBuildFile; fileRef = A60A0C7B180D9FACE31987D9 /* knock_start.wav */; };
+		575955EE7345CBD1F6599710 /* knock_stop.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8795AD9D67AC23EBD8DA301C /* knock_stop.wav */; };
 		89D3BB9BF595CF8C304136BB /* WAVEncoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDB2C6A506BFFAD32A38440D /* WAVEncoderTests.swift */; };
 		9674D4A678AE7D2909163FB1 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD58328E7B5AEC543A2DBFD /* AppState.swift */; };
 		9D3D7B498BCFE6285C15FF1E /* WAVEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE4205EA30A135F5B4A21F81 /* WAVEncoder.swift */; };
+		A4364327F6FD0106E53BE4D1 /* AudioFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95CEF7C1E8320AA12186B5BB /* AudioFeedback.swift */; };
 		B7B6BC8DDFA9B7C6656E3F7C /* TextDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485A1CB8C2C7F718F6172DA5 /* TextDelivery.swift */; };
 		BF55640D266C9A1886370A42 /* TranscriptionClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867BC64A19693BFF9DCB0A61 /* TranscriptionClientTests.swift */; };
 		E5EE08F65CA6474DACC386C0 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DB11B3EC1C2D7CD49724A5 /* HotkeyManager.swift */; };
@@ -36,8 +39,11 @@
 		4D6FF41D4D350D7BA2CE49E5 /* Yappie.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yappie.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		51DB11B3EC1C2D7CD49724A5 /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
 		867BC64A19693BFF9DCB0A61 /* TranscriptionClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionClientTests.swift; sourceTree = "<group>"; };
+		8795AD9D67AC23EBD8DA301C /* knock_stop.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = knock_stop.wav; sourceTree = "<group>"; };
 		9183C2CC788F1A74E2C5475F /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
+		95CEF7C1E8320AA12186B5BB /* AudioFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFeedback.swift; sourceTree = "<group>"; };
 		9C8AF58300A051F2E3C91436 /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
+		A60A0C7B180D9FACE31987D9 /* knock_start.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = knock_start.wav; sourceTree = "<group>"; };
 		BE2646FCFEF3CB04BF2B9CEA /* YappieApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YappieApp.swift; sourceTree = "<group>"; };
 		C9C4F3252BDEBA6D57592F7D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		EE4205EA30A135F5B4A21F81 /* WAVEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WAVEncoder.swift; sourceTree = "<group>"; };
@@ -55,10 +61,20 @@
 			);
 			sourceTree = "<group>";
 		};
+		1CD60CCDE9C5628C187A1D8A /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				A60A0C7B180D9FACE31987D9 /* knock_start.wav */,
+				8795AD9D67AC23EBD8DA301C /* knock_stop.wav */,
+			);
+			path = Sounds;
+			sourceTree = "<group>";
+		};
 		53306B660425AB2A0DB22E87 /* Yappie */ = {
 			isa = PBXGroup;
 			children = (
 				FDD58328E7B5AEC543A2DBFD /* AppState.swift */,
+				95CEF7C1E8320AA12186B5BB /* AudioFeedback.swift */,
 				9C8AF58300A051F2E3C91436 /* AudioRecorder.swift */,
 				51DB11B3EC1C2D7CD49724A5 /* HotkeyManager.swift */,
 				C9C4F3252BDEBA6D57592F7D /* Info.plist */,
@@ -67,6 +83,7 @@
 				2CFA5ADF0C650588D2C16F71 /* TranscriptionClient.swift */,
 				EE4205EA30A135F5B4A21F81 /* WAVEncoder.swift */,
 				BE2646FCFEF3CB04BF2B9CEA /* YappieApp.swift */,
+				1CD60CCDE9C5628C187A1D8A /* Sounds */,
 			);
 			path = Yappie;
 			sourceTree = "<group>";
@@ -97,6 +114,7 @@
 			buildConfigurationList = 8F6BDFF5FC5F438D0841C049 /* Build configuration list for PBXNativeTarget "Yappie" */;
 			buildPhases = (
 				EAF49703F976CB95DC2F4FDA /* Sources */,
+				DA68CF76B403A24E3767825D /* Resources */,
 			);
 			buildRules = (
 			);
@@ -158,6 +176,18 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		DA68CF76B403A24E3767825D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5531C779351837D57CFA8990 /* knock_start.wav in Resources */,
+				575955EE7345CBD1F6599710 /* knock_stop.wav in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		45C2DAB7705B86502C866597 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -173,6 +203,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9674D4A678AE7D2909163FB1 /* AppState.swift in Sources */,
+				A4364327F6FD0106E53BE4D1 /* AudioFeedback.swift in Sources */,
 				29A8F32071442057C6C7B97C /* AudioRecorder.swift in Sources */,
 				E5EE08F65CA6474DACC386C0 /* HotkeyManager.swift in Sources */,
 				F162E61CD1760EAC983604E9 /* Preferences.swift in Sources */,

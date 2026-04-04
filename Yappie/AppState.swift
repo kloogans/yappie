@@ -49,6 +49,14 @@ final class AppState: ObservableObject {
             Task { @MainActor in self?.stopRecording() }
         }
         applyRecordingMode()
+
+        // Re-apply recording mode when preference changes
+        NotificationCenter.default.addObserver(
+            forName: UserDefaults.didChangeNotification,
+            object: nil, queue: .main
+        ) { [weak self] _ in
+            self?.applyRecordingMode()
+        }
     }
 
     func applyRecordingMode() {
@@ -64,6 +72,7 @@ final class AppState: ObservableObject {
         guard status == .idle else { return }
         do {
             try recorder.startRecording()
+            AudioFeedback.playStart()
             status = .recording
             recordingDuration = 0
             durationTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
@@ -79,6 +88,7 @@ final class AppState: ObservableObject {
         durationTimer?.invalidate()
         durationTimer = nil
 
+        AudioFeedback.playStop()
         let wavData = recorder.stopRecording()
         status = .transcribing
 

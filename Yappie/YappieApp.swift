@@ -14,8 +14,9 @@ struct YappieApp: App {
 
             Divider()
 
-            SettingsLink {
-                Text("Preferences…")
+            Button("Preferences…") {
+                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+                NSApp.activate(ignoringOtherApps: true)
             }
             .keyboardShortcut(",", modifiers: .command)
 
