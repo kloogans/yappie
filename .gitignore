@@ -14,3 +14,4 @@ DerivedData/
 
 # Code coverage artifacts
 default.profraw
+.superpowers/
