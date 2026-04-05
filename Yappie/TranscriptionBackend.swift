@@ -17,17 +17,29 @@ final class BackendManager {
         self.backends = backends
     }
 
-    convenience init(store: BackendStore) {
-        let enabledBackends: [TranscriptionBackend] = store.backends
-            .filter { $0.enabled }
-            .compactMap { config in
-                switch config.type {
-                case .api: return APIBackend(config: config)
-                case .tcp: return TCPBackend(config: config)
-                case .local: return nil  // Handled separately in Task 5
+    static func create(store: BackendStore) async -> BackendManager {
+        var enabledBackends: [TranscriptionBackend] = []
+        for config in store.backends where config.enabled {
+            switch config.type {
+            case .api:
+                enabledBackends.append(APIBackend(config: config))
+            case .tcp:
+                enabledBackends.append(TCPBackend(config: config))
+            case .local:
+                if let modelPath = LocalModelManager.downloadedModelDirectoryPath() {
+                    do {
+                        let backend = try await LocalBackend(
+                            modelFolder: modelPath,
+                            language: config.language
+                        )
+                        enabledBackends.append(backend)
+                    } catch {
+                        NSLog("[Yappie] Failed to load local model: %@", "\(error)")
+                    }
                 }
             }
-        self.init(backends: enabledBackends)
+        }
+        return BackendManager(backends: enabledBackends)
     }
 
     func transcribe(wavData: Data) async throws -> TranscriptionResult {

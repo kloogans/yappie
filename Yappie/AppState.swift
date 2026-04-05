@@ -132,8 +132,13 @@ final class AppState: ObservableObject {
 
         Task { @MainActor in
             do {
-                let manager = cachedManager ?? BackendManager(store: backendStore)
-                cachedManager = manager
+                let manager: BackendManager
+                if let cached = cachedManager {
+                    manager = cached
+                } else {
+                    manager = await BackendManager.create(store: backendStore)
+                    cachedManager = manager
+                }
                 let result = try await manager.transcribe(wavData: wavData)
 
                 if result.backendIndex > 0 && !hasShownFallbackNotice {
