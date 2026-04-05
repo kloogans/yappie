@@ -31,17 +31,13 @@ struct YappieApp: App {
     }
 
     init() {
-        switch AVCaptureDevice.authorizationStatus(for: .audio) {
-        case .notDetermined:
-            AVCaptureDevice.requestAccess(for: .audio) { granted in
-                NSLog("[Yappie] Mic permission granted: %@", granted ? "yes" : "no")
+        // Request mic permission — AVAudioApplication works for ad-hoc signed apps
+        AVAudioApplication.requestRecordPermission { granted in
+            if granted {
+                debugLog("[Yappie] Mic permission granted")
+            } else {
+                debugLog("[Yappie] Mic permission denied — user must enable in System Settings")
             }
-        case .denied, .restricted:
-            NSLog("[Yappie] Mic permission denied — user must enable in System Settings")
-        case .authorized:
-            break
-        @unknown default:
-            break
         }
         _ = TextDelivery.checkAccessibility(prompt: true)
     }

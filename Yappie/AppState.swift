@@ -77,6 +77,14 @@ final class AppState: ObservableObject {
                 self?.cachedManager = nil
             }
             .store(in: &cancellables)
+
+        // Preload backends (so WhisperKit model is ready before first recording)
+        Task { @MainActor in
+            debugLog("[Yappie] Preloading backends...")
+            let manager = await BackendManager.create(store: backendStore)
+            cachedManager = manager
+            debugLog("[Yappie] Backends ready")
+        }
     }
 
     func applyRecordingMode() {
@@ -132,14 +140,20 @@ final class AppState: ObservableObject {
 
         Task { @MainActor in
             do {
+                debugLog("[Yappie DEBUG] stopRecording: wavData size = \(wavData.count) bytes")
                 let manager: BackendManager
                 if let cached = cachedManager {
+                    debugLog("[Yappie DEBUG] Using cached BackendManager")
                     manager = cached
                 } else {
+                    debugLog("[Yappie DEBUG] Creating new BackendManager...")
                     manager = await BackendManager.create(store: backendStore)
                     cachedManager = manager
+                    debugLog("[Yappie DEBUG] BackendManager created")
                 }
+                debugLog("[Yappie DEBUG] Starting transcription...")
                 let result = try await manager.transcribe(wavData: wavData)
+                debugLog("[Yappie DEBUG] Transcription result: '\(result.text)' (backend \(result.backendIndex))")
 
                 if result.backendIndex > 0 && !hasShownFallbackNotice {
                     hasShownFallbackNotice = true
@@ -152,6 +166,7 @@ final class AppState: ObservableObject {
 
                 TextDelivery.deliver(result.text, mode: deliveryMode)
             } catch {
+                debugLog("[Yappie DEBUG] Transcription FAILED: \(error)")
                 NSLog("[Yappie] Transcription failed: %@", "\(error)")
                 showNotification(title: "Yappie", body: "Transcription failed — no backends available")
             }

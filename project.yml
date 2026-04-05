@@ -29,8 +29,7 @@ targets:
         CODE_SIGN_STYLE: Manual
       configs:
         Debug:
-          PRODUCT_BUNDLE_IDENTIFIER: com.kloogans.Yappie.dev
-          PRODUCT_NAME: Yappie Dev
+          PRODUCT_BUNDLE_IDENTIFIER: com.kloogans.Yappie
         Release:
           PRODUCT_BUNDLE_IDENTIFIER: com.kloogans.Yappie
   YappieTests:
