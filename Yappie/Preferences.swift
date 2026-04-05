@@ -195,10 +195,18 @@ struct BackendCardView: View {
     var body: some View {
         HStack(spacing: 12) {
             // Type icon
-            Image(systemName: backend.type == .api ? "globe" : "network")
-                .font(.system(size: 16))
-                .foregroundStyle(backend.enabled ? .primary : .tertiary)
-                .frame(width: 24)
+            Group {
+                if backend.type == .local {
+                    Image("AppIcon")
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                } else {
+                    Image(systemName: backend.type == .api ? "globe" : "network")
+                        .font(.system(size: 16))
+                        .foregroundStyle(backend.enabled ? .primary : .tertiary)
+                }
+            }
+            .frame(width: 24)
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
@@ -262,6 +270,9 @@ struct BackendCardView: View {
     }
 
     private func deleteBackend() {
+        if backend.type == .local {
+            try? LocalModelManager.deleteModel()
+        }
         if let index = store.backends.firstIndex(where: { $0.id == backend.id }) {
             store.remove(at: index)
         }
@@ -288,7 +299,18 @@ struct BackendCardView: View {
         case .tcp:
             return "\(backend.host ?? ""):\(backend.port ?? 0)"
         case .local:
-            return backend.model ?? "Local"
+            var parts = [String]()
+            if let model = backend.model {
+                let displayName = LocalModelManager.curatedModels.first { $0.variant == model }?.displayName ?? model
+                parts.append(displayName)
+            }
+            parts.append(backend.language.flatMap { code in
+                Locale.current.localizedString(forLanguageCode: code) ?? code
+            } ?? "Auto-detect")
+            if let size = LocalModelManager.modelSizeOnDisk() {
+                parts.append(size)
+            }
+            return parts.joined(separator: " \u{00B7} ")
         }
     }
 
