@@ -17,6 +17,7 @@
 		575955EE7345CBD1F6599710 /* knock_stop.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8795AD9D67AC23EBD8DA301C /* knock_stop.wav */; };
 		594F9567F414CE3652C90DE8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DED7819C239D3314B4D00440 /* Assets.xcassets */; };
 		6B8705F4BFF0614D7D4AE5C7 /* BackendConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4597B7BAF801F4403167660 /* BackendConfig.swift */; };
+		7866DF9363F4B3E9BFF1F25B /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = CB7B300BF9D30C0521FA5FDE /* WhisperKit */; };
 		89D3BB9BF595CF8C304136BB /* WAVEncoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDB2C6A506BFFAD32A38440D /* WAVEncoderTests.swift */; };
 		8A9ACCB0A945B316B494651B /* yappie-logo.svg in Resources */ = {isa = PBXBuildFile; fileRef = 5F05B11A4FF80336D6301BE7 /* yappie-logo.svg */; };
 		9674D4A678AE7D2909163FB1 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD58328E7B5AEC543A2DBFD /* AppState.swift */; };
@@ -72,6 +73,17 @@
 		FDB2C6A506BFFAD32A38440D /* WAVEncoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WAVEncoderTests.swift; sourceTree = "<group>"; };
 		FDD58328E7B5AEC543A2DBFD /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5D04C12F36E7955174E0143C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7866DF9363F4B3E9BFF1F25B /* WhisperKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		16F049780B1CDE127F421A68 = {
@@ -156,6 +168,7 @@
 			buildPhases = (
 				EAF49703F976CB95DC2F4FDA /* Sources */,
 				DA68CF76B403A24E3767825D /* Resources */,
+				5D04C12F36E7955174E0143C /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -163,6 +176,7 @@
 			);
 			name = Yappie;
 			packageProductDependencies = (
+				CB7B300BF9D30C0521FA5FDE /* WhisperKit */,
 			);
 			productName = Yappie;
 			productReference = 4D6FF41D4D350D7BA2CE49E5 /* Yappie.app */;
@@ -209,6 +223,9 @@
 			);
 			mainGroup = 16F049780B1CDE127F421A68;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				FFB0E3EAC8E86E8FCD4F4671 /* XCRemoteSwiftPackageReference "WhisperKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C5425E3CEF1536E3A32E32DA /* Products */;
 			projectDirPath = "";
@@ -500,6 +517,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		FFB0E3EAC8E86E8FCD4F4671 /* XCRemoteSwiftPackageReference "WhisperKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/argmaxinc/WhisperKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CB7B300BF9D30C0521FA5FDE /* WhisperKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FFB0E3EAC8E86E8FCD4F4671 /* XCRemoteSwiftPackageReference "WhisperKit" */;
+			productName = WhisperKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 178C732C11AF61DF26F2B901 /* Project object */;
 }

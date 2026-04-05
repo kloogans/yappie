@@ -3,11 +3,18 @@ options:
   bundleIdPrefix: com.kloogans
   deploymentTarget:
     macOS: "14.0"
+packages:
+  WhisperKit:
+    url: https://github.com/argmaxinc/WhisperKit.git
+    from: "0.9.0"
 targets:
   Yappie:
     type: application
     platform: macOS
     sources: [Yappie]
+    dependencies:
+      - package: WhisperKit
+        product: WhisperKit
     info:
       path: Yappie/Info.plist
       properties:
