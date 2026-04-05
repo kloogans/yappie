@@ -287,6 +287,8 @@ struct BackendCardView: View {
             return parts.joined(separator: " \u{00B7} ")
         case .tcp:
             return "\(backend.host ?? ""):\(backend.port ?? 0)"
+        case .local:
+            return backend.model ?? "Local"
         }
     }
 

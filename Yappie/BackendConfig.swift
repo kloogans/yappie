@@ -7,6 +7,7 @@ import Security
 enum BackendType: String, Codable {
     case api
     case tcp
+    case local
 }
 
 struct BackendConfig: Codable, Identifiable {
@@ -18,10 +19,12 @@ struct BackendConfig: Codable, Identifiable {
     var model: String?
     var host: String?
     var port: Int?
+    var language: String?
 
     init(name: String, type: BackendType, enabled: Bool,
          baseURL: String? = nil, model: String? = nil,
-         host: String? = nil, port: Int? = nil) {
+         host: String? = nil, port: Int? = nil,
+         language: String? = nil) {
         self.id = UUID()
         self.name = name
         self.type = type
@@ -30,6 +33,7 @@ struct BackendConfig: Codable, Identifiable {
         self.model = model
         self.host = host
         self.port = port
+        self.language = language
     }
 }
 

@@ -20,10 +20,11 @@ final class BackendManager {
     convenience init(store: BackendStore) {
         let enabledBackends: [TranscriptionBackend] = store.backends
             .filter { $0.enabled }
-            .map { config in
+            .compactMap { config in
                 switch config.type {
                 case .api: return APIBackend(config: config)
                 case .tcp: return TCPBackend(config: config)
+                case .local: return nil  // Handled separately in Task 5
                 }
             }
         self.init(backends: enabledBackends)

@@ -90,6 +90,41 @@ final class BackendConfigTests: XCTestCase {
         KeychainHelper.delete(forBackendID: testID)
     }
 
+    func testBackendConfigLocal() {
+        let backend = BackendConfig(
+            name: "Local Whisper",
+            type: .local,
+            enabled: true,
+            model: "distil-whisper_distil-large-v3_turbo_600MB",
+            language: "en"
+        )
+
+        let encoded = try! JSONEncoder().encode([backend])
+        let decoded = try! JSONDecoder().decode([BackendConfig].self, from: encoded)
+
+        XCTAssertEqual(decoded[0].type, .local)
+        XCTAssertEqual(decoded[0].model, "distil-whisper_distil-large-v3_turbo_600MB")
+        XCTAssertEqual(decoded[0].language, "en")
+        XCTAssertNil(decoded[0].baseURL)
+        XCTAssertNil(decoded[0].host)
+    }
+
+    func testBackendConfigLocalAutoDetect() {
+        let backend = BackendConfig(
+            name: "Local Whisper",
+            type: .local,
+            enabled: true,
+            model: "openai_whisper-tiny",
+            language: nil
+        )
+
+        let encoded = try! JSONEncoder().encode([backend])
+        let decoded = try! JSONDecoder().decode([BackendConfig].self, from: encoded)
+
+        XCTAssertEqual(decoded[0].type, .local)
+        XCTAssertNil(decoded[0].language)
+    }
+
     func testMigrationFromOldSettings() {
         let defaults = UserDefaults.standard
         defaults.set("192.168.4.24", forKey: "serverHost")
