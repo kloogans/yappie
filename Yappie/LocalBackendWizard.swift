@@ -21,6 +21,7 @@ private let supportedLanguages: [(code: String?, name: String)] = [
 
 struct LocalModelSelectionView: View {
     @ObservedObject var store: BackendStore
+    var existingBackend: BackendConfig?
     var onDismiss: () -> Void
     var onBack: () -> Void
 
@@ -44,6 +45,7 @@ struct LocalModelSelectionView: View {
                 sizeDescription: sizeDescription(for: variant),
                 language: selectedLanguage,
                 store: store,
+                existingBackend: existingBackend,
                 onDismiss: onDismiss,
                 onBack: { showDownload = false }
             )
@@ -73,7 +75,7 @@ struct LocalModelSelectionView: View {
                     }
                 }
                 .frame(width: 140)
-                if selectedLanguage != nil {
+                if selectedLanguage == nil {
                     Text("Setting a language improves speed & accuracy")
                         .font(.caption2)
                         .foregroundStyle(.tertiary)
@@ -312,6 +314,7 @@ struct LocalModelDownloadView: View {
     let sizeDescription: String
     let language: String?
     @ObservedObject var store: BackendStore
+    var existingBackend: BackendConfig?
     var onDismiss: () -> Void
     var onBack: () -> Void
 
@@ -406,14 +409,20 @@ struct LocalModelDownloadView: View {
             .padding(.horizontal, 40)
 
             Button("Done") {
-                let config = BackendConfig(
-                    name: "Local Whisper",
-                    type: .local,
-                    enabled: true,
-                    model: variant,
-                    language: language
-                )
-                store.add(config)
+                if var existing = existingBackend {
+                    existing.model = variant
+                    existing.language = language
+                    store.update(existing)
+                } else {
+                    let config = BackendConfig(
+                        name: "Local Whisper",
+                        type: .local,
+                        enabled: true,
+                        model: variant,
+                        language: language
+                    )
+                    store.add(config)
+                }
                 onDismiss()
             }
             .keyboardShortcut(.defaultAction)
@@ -457,7 +466,7 @@ struct LocalModelDownloadView: View {
 
     private var progressDescription: String {
         guard let curated = LocalModelManager.curatedModels.first(where: { $0.variant == variant }) else {
-            return ""
+            return "Downloading..."
         }
         let downloaded = Int64(downloadProgress * Double(curated.sizeBytes))
         let formatter = ByteCountFormatter()
@@ -487,7 +496,7 @@ struct LocalModelDownloadView: View {
                     isDownloading = false
                 }
             } catch is CancellationError {
-                // User cancelled
+                try? LocalModelManager.deleteModel()
             } catch {
                 await MainActor.run {
                     self.error = error.localizedDescription

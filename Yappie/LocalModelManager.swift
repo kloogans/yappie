@@ -57,14 +57,11 @@ enum LocalModelManager {
     ]
 
     static func isAppleSilicon() -> Bool {
-        var sysinfo = utsname()
-        uname(&sysinfo)
-        let machine = withUnsafePointer(to: &sysinfo.machine) {
-            $0.withMemoryRebound(to: CChar.self, capacity: 1) {
-                String(validatingUTF8: $0)
-            }
-        }
-        return machine?.hasPrefix("arm64") ?? false
+        #if arch(arm64)
+        return true
+        #else
+        return false
+        #endif
     }
 
     static func deviceRAMInGB() -> Int {

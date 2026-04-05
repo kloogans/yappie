@@ -338,6 +338,7 @@ struct BackendEditView: View {
             if backend.type == .local {
                 LocalModelSelectionView(
                     store: store,
+                    existingBackend: backend,
                     onDismiss: { dismiss() },
                     onBack: { dismiss() }
                 )
