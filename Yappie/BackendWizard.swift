@@ -14,24 +14,29 @@ struct APIPreset {
 private let apiPresets: [APIPreset] = [
     APIPreset(name: "OpenAI", baseURL: "https://api.openai.com/v1", model: "whisper-1", needsKey: true, icon: "brain"),
     APIPreset(name: "Groq", baseURL: "https://api.groq.com/openai/v1", model: "whisper-large-v3-turbo", needsKey: true, icon: "bolt.fill"),
-    APIPreset(name: "faster-whisper-server", baseURL: "http://localhost:8000/v1", model: "large-v3-turbo", needsKey: false, icon: "server.rack"),
 ]
 
-// MARK: - Add Wizard (Two-Step)
+// MARK: - Add Wizard (Multi-Step)
 
 struct BackendWizardView: View {
     @ObservedObject var store: BackendStore
     @Environment(\.dismiss) private var dismiss
     @State private var selectedType: BackendType?
     @State private var selectedPreset: APIPreset?
+    @State private var showLocalWizard = false
 
     var body: some View {
         VStack(spacing: 0) {
-            Text("Add Backend")
-                .font(.headline)
-                .padding()
-
-            if let selectedType {
+            if showLocalWizard {
+                LocalModelSelectionView(
+                    store: store,
+                    onDismiss: { dismiss() },
+                    onBack: { showLocalWizard = false }
+                )
+            } else if let selectedType {
+                Text("Add Backend")
+                    .font(.headline)
+                    .padding()
                 BackendFormView(
                     type: selectedType,
                     store: store,
@@ -40,17 +45,69 @@ struct BackendWizardView: View {
                     onBack: { self.selectedType = nil; self.selectedPreset = nil }
                 )
             } else {
+                Text("Add Backend")
+                    .font(.headline)
+                    .padding()
                 typeSelectionView
             }
         }
-        .frame(width: 420, height: 420)
+        .frame(width: 420, height: 480)
     }
 
     private var typeSelectionView: some View {
         VStack(spacing: 16) {
-            // Quick presets
+            // On-Device section (Apple Silicon only)
+            if LocalModelManager.isAppleSilicon() {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("On-Device")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                        .padding(.leading, 4)
+
+                    Button {
+                        showLocalWizard = true
+                    } label: {
+                        HStack(spacing: 10) {
+                            Image("AppIcon")
+                                .resizable()
+                                .frame(width: 20, height: 20)
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text("Local Whisper")
+                                    .fontWeight(.semibold)
+                                    .font(.system(size: 13))
+                                Text("Private, offline, no API key needed")
+                                    .font(.caption2)
+                                    .foregroundStyle(.green)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 10)
+                        .background(
+                            LinearGradient(
+                                colors: [Color.green.opacity(0.08), Color.green.opacity(0.04)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .strokeBorder(Color.green.opacity(0.2), lineWidth: 1)
+                        )
+                        .cornerRadius(8)
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                Divider()
+            }
+
+            // Cloud APIs
             VStack(alignment: .leading, spacing: 8) {
-                Text("Quick Setup")
+                Text("Cloud APIs")
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(.secondary)
                     .padding(.leading, 4)
@@ -278,13 +335,21 @@ struct BackendEditView: View {
                 .font(.headline)
                 .padding()
 
-            BackendFormView(
-                type: backend.type,
-                store: store,
-                existingBackend: backend,
-                onDismiss: { dismiss() }
-            )
+            if backend.type == .local {
+                LocalModelSelectionView(
+                    store: store,
+                    onDismiss: { dismiss() },
+                    onBack: { dismiss() }
+                )
+            } else {
+                BackendFormView(
+                    type: backend.type,
+                    store: store,
+                    existingBackend: backend,
+                    onDismiss: { dismiss() }
+                )
+            }
         }
-        .frame(width: 420, height: 300)
+        .frame(width: 420, height: backend.type == .local ? 480 : 300)
     }
 }
