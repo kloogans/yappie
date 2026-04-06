@@ -241,9 +241,7 @@ final class AppState: ObservableObject {
         preloadTask?.cancel()
         preloadTask = nil
         loadingBackendIDs.removeAll()
-        if modelLoadingStatus == .loading {
-            modelLoadingStatus = .idle
-        }
+        modelLoadingStatus = .idle
         cachedManager = nil
         debugLog("[Yappie] Preload cancelled by user")
     }
@@ -329,6 +327,6 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        completionHandler([.banner, .sound])
+        completionHandler([.banner])
     }
 }

@@ -11,13 +11,17 @@ private let logFile: FileHandle? = {
     #endif
 }()
 
+private let logQueue = DispatchQueue(label: "com.kloogans.Yappie.debugLog")
+
 func debugLog(_ message: @autoclosure () -> String) {
     #if DEBUG
     let line = "\(message())\n"
     print(line, terminator: "")
     if let data = line.data(using: .utf8) {
-        logFile?.seekToEndOfFile()
-        logFile?.write(data)
+        logQueue.async {
+            logFile?.seekToEndOfFile()
+            logFile?.write(data)
+        }
     }
     #endif
 }

@@ -334,8 +334,15 @@ struct BackendCardView: View {
         }
         .onAppear {
             if backend.type == .local, let model = backend.model {
-                isModelMissing = backend.enabled && LocalModelManager.modelDirectoryPath(for: model) == nil
-                diskSize = LocalModelManager.modelSizeOnDisk(variant: model)
+                let enabled = backend.enabled
+                Task.detached(priority: .utility) {
+                    let missing = enabled && LocalModelManager.modelDirectoryPath(for: model) == nil
+                    let size = LocalModelManager.modelSizeOnDisk(variant: model)
+                    await MainActor.run {
+                        isModelMissing = missing
+                        diskSize = size
+                    }
+                }
             }
         }
     }

@@ -11,7 +11,7 @@ struct TranscriptionResult {
 }
 
 /// Wraps a local backend config and loads the model on first transcription call.
-final class LazyLocalBackend: TranscriptionBackend {
+actor LazyLocalBackend: TranscriptionBackend {
     private let modelPath: String
     private let language: String?
     private var loaded: LocalBackend?

@@ -389,8 +389,8 @@ struct LocalModelDownloadView: View {
             // Summary card
             VStack(spacing: 6) {
                 summaryRow(label: "Model", value: displayName)
-                summaryRow(label: "Language", value: language.flatMap { code in
-                    supportedLanguages.first { $0.code == code }?.name
+                summaryRow(label: "Language", value: language.flatMap {
+                    Locale.current.localizedString(forLanguageCode: $0)
                 } ?? "Auto-detect")
                 summaryRow(label: "Disk usage", value: actualSize ?? sizeDescription)
             }
