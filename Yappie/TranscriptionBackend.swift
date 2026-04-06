@@ -10,6 +10,27 @@ struct TranscriptionResult {
     let backendIndex: Int
 }
 
+/// Wraps a local backend config and loads the model on first transcription call.
+final class LazyLocalBackend: TranscriptionBackend {
+    private let modelPath: String
+    private let language: String?
+    private var loaded: LocalBackend?
+
+    init(modelPath: String, language: String?) {
+        self.modelPath = modelPath
+        self.language = language
+    }
+
+    func transcribe(wavData: Data) async throws -> String {
+        if loaded == nil {
+            debugLog("[Yappie] Lazy-loading fallback model: \(modelPath)")
+            loaded = try await LocalBackend(modelFolder: modelPath, language: language)
+            debugLog("[Yappie] Fallback model loaded (\(String(format: "%.1f", loaded!.loadDuration))s)")
+        }
+        return try await loaded!.transcribe(wavData: wavData)
+    }
+}
+
 final class BackendManager {
     private let backends: [TranscriptionBackend]
     let localModelLoadTime: TimeInterval?
@@ -23,6 +44,7 @@ final class BackendManager {
         debugLog("[Yappie] BackendManager.create: \(store.backends.count) backends configured")
         var enabledBackends: [TranscriptionBackend] = []
         var loadTime: TimeInterval?
+        var primaryLocalLoaded = false
         for config in store.backends where config.enabled {
             debugLog("[Yappie] Processing backend [\(enabledBackends.count)]: \(config.name) type=\(config.type.rawValue) model=\(config.model ?? "none")")
             switch config.type {
@@ -34,26 +56,32 @@ final class BackendManager {
                 let modelPath = config.model.flatMap { LocalModelManager.modelDirectoryPath(for: $0) }
                 debugLog("[Yappie] Local model path: \(modelPath ?? "nil")")
                 if let modelPath {
-                    do {
-                        debugLog("[Yappie] Loading WhisperKit model...")
-                        let language = config.language
-                        let backend = try await Task.detached {
-                            try await LocalBackend(modelFolder: modelPath, language: language)
-                        }.value
-                        enabledBackends.append(backend)
-                        loadTime = backend.loadDuration
-                        debugLog("[Yappie] WhisperKit model loaded successfully")
-                        await onBackendLoaded?(config.id)
-                        await Task.yield()
-                    } catch {
-                        debugLog("[Yappie] WhisperKit model FAILED to load: \(error)")
-                        await onBackendLoaded?(config.id)
-                        await Task.yield()
+                    if !primaryLocalLoaded {
+                        // Eagerly load the first (primary) local backend
+                        do {
+                            debugLog("[Yappie] Loading primary WhisperKit model...")
+                            let language = config.language
+                            let backend = try await Task.detached {
+                                try await LocalBackend(modelFolder: modelPath, language: language)
+                            }.value
+                            enabledBackends.append(backend)
+                            loadTime = backend.loadDuration
+                            primaryLocalLoaded = true
+                            debugLog("[Yappie] Primary model loaded successfully")
+                            await onBackendLoaded?(config.id)
+                        } catch {
+                            debugLog("[Yappie] Primary model FAILED to load: \(error)")
+                            await onBackendLoaded?(config.id)
+                        }
+                    } else {
+                        // Defer fallback local backends to load on first use
+                        debugLog("[Yappie] Deferring fallback model: \(config.model ?? "unknown")")
+                        enabledBackends.append(LazyLocalBackend(modelPath: modelPath, language: config.language))
                     }
                 }
             }
         }
-        debugLog("[Yappie] BackendManager created with \(enabledBackends.count) active backends")
+        debugLog("[Yappie] BackendManager created with \(enabledBackends.count) active backends (\(primaryLocalLoaded ? "primary loaded" : "no local"))")
         return BackendManager(backends: enabledBackends, localModelLoadTime: loadTime)
     }
 

@@ -260,10 +260,17 @@ struct BackendCardView: View {
                         .foregroundStyle(.red)
                         .lineLimit(2)
                 } else {
-                    Text(connectionDetail)
-                        .font(.system(size: 11))
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
+                    HStack(spacing: 0) {
+                        Text(connectionDetail)
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                        if backend.type == .local && priorityLabel == "FALLBACK" {
+                            Text(" · Loads on first use")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
                 }
             }
 

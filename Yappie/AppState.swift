@@ -116,9 +116,8 @@ final class AppState: ObservableObject {
         preloadTask?.cancel()
         modelLoadingStatus = .idle
 
-        let localIDs = Set(backendStore.enabledBackends.filter { $0.type == .local }.map(\.id))
-        if !localIDs.isEmpty {
-            loadingBackendIDs = localIDs
+        if let primaryLocalID = backendStore.enabledBackends.first(where: { $0.type == .local })?.id {
+            loadingBackendIDs = [primaryLocalID]
             modelLoadingStatus = .loading
             showNotification(body: "Preparing speech model. This may take a moment on first launch.", autoDismiss: 5)
         }
