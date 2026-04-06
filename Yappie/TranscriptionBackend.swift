@@ -36,10 +36,10 @@ final class BackendManager {
                 if let modelPath {
                     do {
                         debugLog("[Yappie] Loading WhisperKit model...")
-                        let backend = try await LocalBackend(
-                            modelFolder: modelPath,
-                            language: config.language
-                        )
+                        let language = config.language
+                        let backend = try await Task.detached {
+                            try await LocalBackend(modelFolder: modelPath, language: language)
+                        }.value
                         enabledBackends.append(backend)
                         loadTime = backend.loadDuration
                         debugLog("[Yappie] WhisperKit model loaded successfully")
