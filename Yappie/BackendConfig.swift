@@ -66,6 +66,7 @@ final class BackendStore: ObservableObject {
     func save() {
         guard let data = try? Self.encoder.encode(backends) else { return }
         UserDefaults.standard.set(data, forKey: key)
+        UserDefaults.standard.synchronize()
     }
 
     func add(_ backend: BackendConfig) {

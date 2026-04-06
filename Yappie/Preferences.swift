@@ -213,12 +213,8 @@ struct BackendCardView: View {
     let hasAPIKey: Bool
     let priorityLabel: String?
     @State private var showEdit = false
-
-    private var isModelMissing: Bool {
-        backend.type == .local
-            && backend.enabled
-            && backend.model.flatMap({ LocalModelManager.modelDirectoryPath(for: $0) }) == nil
-    }
+    @State private var isModelMissing = false
+    @State private var diskSize: String?
 
     var body: some View {
         HStack(spacing: 12) {
@@ -302,6 +298,12 @@ struct BackendCardView: View {
         .sheet(isPresented: $showEdit) {
             BackendEditView(backend: backend, store: store)
         }
+        .onAppear {
+            if backend.type == .local, let model = backend.model {
+                isModelMissing = backend.enabled && LocalModelManager.modelDirectoryPath(for: model) == nil
+                diskSize = LocalModelManager.modelSizeOnDisk(variant: model)
+            }
+        }
     }
 
     private func deleteBackend() {
@@ -336,13 +338,12 @@ struct BackendCardView: View {
         case .local:
             var parts = [String]()
             if let model = backend.model {
-                let displayName = LocalModelManager.curatedModels.first { $0.variant == model }?.displayName ?? model
-                parts.append(displayName)
+                parts.append(LocalModelManager.displayName(for: model))
             }
             parts.append(backend.language.flatMap { code in
                 Locale.current.localizedString(forLanguageCode: code) ?? code
             } ?? "Auto-detect")
-            if let model = backend.model, let size = LocalModelManager.modelSizeOnDisk(variant: model) {
+            if let size = diskSize {
                 parts.append(size)
             }
             return parts.joined(separator: " \u{00B7} ")

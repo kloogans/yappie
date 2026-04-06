@@ -37,12 +37,12 @@ final class LocalModelManagerTests: XCTestCase {
     }
 
     func testIsAppleSiliconReturnsBool() {
-        let result = LocalModelManager.isAppleSilicon()
+        let result = LocalModelManager.isAppleSiliconDevice
         XCTAssertNotNil(result)
     }
 
     func testDeviceRAMReturnPositive() {
-        let ram = LocalModelManager.deviceRAMInGB()
+        let ram = LocalModelManager.deviceRAM
         XCTAssertGreaterThan(ram, 0)
     }
 }

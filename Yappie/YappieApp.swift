@@ -1,7 +1,6 @@
 // Yappie/YappieApp.swift
 import SwiftUI
 import AVFoundation
-import UserNotifications
 
 @main
 struct YappieApp: App {
@@ -56,9 +55,6 @@ struct YappieApp: App {
             } else {
                 debugLog("[Yappie] Mic permission denied. Enable in System Settings.")
             }
-        }
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
-            debugLog("[Yappie] Notification permission: \(granted ? "granted" : "denied")")
         }
         _ = TextDelivery.checkAccessibility(prompt: true)
     }

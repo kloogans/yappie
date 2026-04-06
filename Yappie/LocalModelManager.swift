@@ -13,6 +13,31 @@ struct CuratedModel {
 
 enum LocalModelManager {
 
+    static let byteFormatter: ByteCountFormatter = {
+        let f = ByteCountFormatter()
+        f.countStyle = .file
+        return f
+    }()
+
+    static let isAppleSiliconDevice: Bool = {
+        var value: Int32 = 0
+        var size = MemoryLayout<Int32>.size
+        let result = sysctlbyname("hw.optional.arm64", &value, &size, nil, 0)
+        return result == 0 && value == 1
+    }()
+
+    static let deviceRAM: Int = Int(ProcessInfo.processInfo.physicalMemory / (1024 * 1024 * 1024))
+
+    static let recommendedVariant: String = recommendedModel(ramGB: deviceRAM)
+
+    static func displayName(for variant: String) -> String {
+        curatedModels.first { $0.variant == variant }?.displayName ?? variant
+    }
+
+    static func sizeDescription(for variant: String) -> String {
+        curatedModels.first { $0.variant == variant }?.sizeDescription ?? "Unknown size"
+    }
+
     static let curatedModels: [CuratedModel] = [
         CuratedModel(
             displayName: "Tiny",
@@ -56,18 +81,6 @@ enum LocalModelManager {
         ),
     ]
 
-    static func isAppleSilicon() -> Bool {
-        var value: Int32 = 0
-        var size = MemoryLayout<Int32>.size
-        // Returns 1 on Apple Silicon even when running under Rosetta
-        let result = sysctlbyname("hw.optional.arm64", &value, &size, nil, 0)
-        return result == 0 && value == 1
-    }
-
-    static func deviceRAMInGB() -> Int {
-        Int(ProcessInfo.processInfo.physicalMemory / (1024 * 1024 * 1024))
-    }
-
     static func recommendedModel(ramGB: Int) -> String {
         if ramGB >= 24 {
             return "openai_whisper-large-v3_turbo_954MB"
@@ -78,9 +91,6 @@ enum LocalModelManager {
         }
     }
 
-    static func recommendedModelForDevice() -> String {
-        recommendedModel(ramGB: deviceRAMInGB())
-    }
 
     static func modelDirectoryURL() -> URL {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
@@ -136,9 +146,7 @@ enum LocalModelManager {
                 totalSize += Int64(size)
             }
         }
-        let formatter = ByteCountFormatter()
-        formatter.countStyle = .file
-        return formatter.string(fromByteCount: totalSize)
+        return byteFormatter.string(fromByteCount: totalSize)
     }
 
     static func availableModels() async throws -> [String] {

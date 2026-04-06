@@ -57,7 +57,7 @@ struct BackendWizardView: View {
     private var typeSelectionView: some View {
         VStack(spacing: 16) {
             // On-Device section (Apple Silicon only)
-            if LocalModelManager.isAppleSilicon() {
+            if LocalModelManager.isAppleSiliconDevice {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("On-Device")
                         .font(.system(size: 11, weight: .semibold))

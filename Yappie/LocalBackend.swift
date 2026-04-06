@@ -25,8 +25,7 @@ final class LocalBackend: TranscriptionBackend {
     }
 
     func transcribe(wavData: Data) async throws -> String {
-        let lang = language ?? "en"
-        debugLog("[Yappie] LocalBackend.transcribe: \(wavData.count) bytes, language=\(lang)")
+        debugLog("[Yappie] LocalBackend.transcribe: \(wavData.count) bytes, language=\(language ?? "auto")")
         let tempURL = URL(fileURLWithPath: NSTemporaryDirectory())
             .appendingPathComponent(UUID().uuidString)
             .appendingPathExtension("wav")
@@ -39,7 +38,7 @@ final class LocalBackend: TranscriptionBackend {
 
         let options = DecodingOptions(
             task: .transcribe,
-            language: lang,
+            language: language,
             temperature: 0.0,
             skipSpecialTokens: true,
             withoutTimestamps: true

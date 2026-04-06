@@ -43,6 +43,8 @@ final class AppState: ObservableObject {
     private var cachedManager: BackendManager?
     private var cancellables = Set<AnyCancellable>()
     private weak var statusItemButton: NSStatusBarButton?
+    private var preloadTask: Task<Void, Never>?
+    private var notificationsAuthorized = false
 
     var statusIcon: String {
         switch status {
@@ -53,12 +55,17 @@ final class AppState: ObservableObject {
     }
 
     init() {
-        DispatchQueue.main.async { [weak self] in
-            self?.setup()
+        Task { @MainActor in
+            await self.setup()
         }
     }
 
-    func setup() {
+    func setup() async {
+        // Ensure notification permission is granted before sending any notifications
+        let center = UNUserNotificationCenter.current()
+        center.delegate = NotificationDelegate.shared
+        notificationsAuthorized = (try? await center.requestAuthorization(options: [.alert, .sound])) ?? false
+        debugLog("[Yappie] Notification permission: \(notificationsAuthorized ? "granted" : "denied")")
         if backendStore.backends.isEmpty {
             backendStore.migrateFromLegacySettings()
         }
@@ -81,8 +88,8 @@ final class AppState: ObservableObject {
 
         // Reload backends when config changes (e.g. after wizard adds a new backend)
         backendStore.$backends
-            .dropFirst() // skip initial value (handled by preloadBackends below)
-            .receive(on: RunLoop.main)
+            .dropFirst()
+            .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
             .sink { [weak self] _ in
                 self?.cachedManager = nil
                 self?.preloadBackends()
@@ -105,26 +112,29 @@ final class AppState: ObservableObject {
     }
 
     private func preloadBackends() {
-        if backendStore.enabledBackends.contains(where: { $0.type == .local }) {
+        preloadTask?.cancel()
+        modelLoadingStatus = .idle
+
+        let hasLocal = backendStore.enabledBackends.contains(where: { $0.type == .local })
+        if hasLocal {
             modelLoadingStatus = .loading
-            showNotification(title: "Yappie", body: "Preparing speech model. This may take a moment on first launch.", autoDismiss: 5)
+            showNotification(body: "Preparing speech model. This may take a moment on first launch.", autoDismiss: 5)
         }
         let store = backendStore
-        Task.detached {
+        preloadTask = Task { @MainActor [weak self] in
             debugLog("[Yappie] Preloading backends...")
             let manager = await BackendManager.create(store: store)
-            await MainActor.run {
-                self.cachedManager = manager
-                if let loadTime = manager.localModelLoadTime {
-                    self.modelLoadingStatus = .ready
-                    self.showNotification(title: "Yappie", body: "Ready to transcribe", autoDismiss: 3)
-                    debugLog("[Yappie] Model ready (\(String(format: "%.1f", loadTime))s)")
-                } else if self.modelLoadingStatus == .loading {
-                    self.modelLoadingStatus = .failed
-                    self.showNotification(title: "Yappie", body: "Failed to load speech model. Check Preferences.")
-                }
-                debugLog("[Yappie] Backends ready")
+            guard !Task.isCancelled, let self else { return }
+            self.cachedManager = manager
+            if let loadTime = manager.localModelLoadTime {
+                self.modelLoadingStatus = .ready
+                self.showNotification(body: "Ready to transcribe", autoDismiss: 3)
+                debugLog("[Yappie] Model ready (\(String(format: "%.1f", loadTime))s)")
+            } else if self.modelLoadingStatus == .loading {
+                self.modelLoadingStatus = .failed
+                self.showNotification(body: "Failed to load speech model. Check Preferences.")
             }
+            debugLog("[Yappie] Backends ready")
         }
     }
 
@@ -158,11 +168,11 @@ final class AppState: ObservableObject {
     func startRecording() {
         guard status == .idle else { return }
         if modelLoadingStatus == .loading {
-            showNotification(title: "Yappie", body: "Still preparing the speech model. You'll be notified when it's ready.")
+            showNotification(body: "Still preparing the speech model. You'll be notified when it's ready.")
             return
         }
         if modelLoadingStatus == .failed {
-            showNotification(title: "Yappie", body: "Speech model failed to load. Open Preferences to fix.")
+            showNotification(body: "Speech model failed to load. Open Preferences to fix.")
             return
         }
         do {
@@ -174,7 +184,7 @@ final class AppState: ObservableObject {
                 self?.recordingDuration += 0.1
             }
         } catch {
-            NSLog("[Yappie] Recording failed: %@", "\(error)")
+            debugLog("[Yappie] Recording failed: \(error)")
         }
     }
 
@@ -202,22 +212,23 @@ final class AppState: ObservableObject {
                 }
                 debugLog("[Yappie] Starting transcription...")
                 let result = try await manager.transcribe(wavData: wavData)
-                debugLog("[Yappie] Transcription result: '\(result.text)' (backend \(result.backendIndex))")
+                let enabledBackends = backendStore.enabledBackends
+                let usedBackend = result.backendIndex < enabledBackends.count ? enabledBackends[result.backendIndex] : nil
+                let usedModel = usedBackend?.model ?? "unknown"
+                debugLog("[Yappie] Transcription result: '\(result.text)' (backend \(result.backendIndex): \(usedBackend?.name ?? "?") model=\(usedModel))")
 
                 if result.backendIndex > 0 && !hasShownFallbackNotice {
                     hasShownFallbackNotice = true
-                    let enabledBackends = backendStore.enabledBackends
-                    if result.backendIndex < enabledBackends.count {
-                        let name = enabledBackends[result.backendIndex].name
-                        showNotification(title: "Yappie", body: "Using \(name)")
+                    if let backend = usedBackend {
+                        let modelName = backend.model.map { LocalModelManager.displayName(for: $0) } ?? backend.name
+                        showNotification(body: "Using fallback: \(modelName)")
                     }
                 }
 
                 TextDelivery.deliver(result.text, mode: deliveryMode)
             } catch {
                 debugLog("[Yappie] Transcription FAILED: \(error)")
-                NSLog("[Yappie] Transcription failed: %@", "\(error)")
-                showNotification(title: "Yappie", body: "Transcription failed. No backends available.")
+                showNotification(body: "Transcription failed. No backends available.")
             }
             status = .idle
         }
@@ -269,7 +280,9 @@ final class AppState: ObservableObject {
         }
     }
 
-    func showNotification(title: String, body: String, autoDismiss: TimeInterval? = nil) {
+    func showNotification(title: String = "Yappie", body: String, autoDismiss: TimeInterval? = nil) {
+        guard notificationsAuthorized else { return }
+
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
@@ -277,8 +290,9 @@ final class AppState: ObservableObject {
 
         let id = "yappie-\(UUID().uuidString)"
         let request = UNNotificationRequest(identifier: id, content: content, trigger: nil)
+        let center = UNUserNotificationCenter.current()
 
-        UNUserNotificationCenter.current().add(request) { error in
+        center.add(request) { error in
             if let error {
                 debugLog("[Yappie] Notification failed: \(error)")
             }
@@ -286,8 +300,21 @@ final class AppState: ObservableObject {
 
         if let seconds = autoDismiss {
             DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
-                UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [id])
+                center.removeDeliveredNotifications(withIdentifiers: [id])
             }
         }
+    }
+}
+
+// Allow notifications to display as banners even when the app is active
+final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
+    static let shared = NotificationDelegate()
+
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([.banner, .sound])
     }
 }

@@ -36,7 +36,7 @@ final class AudioRecorder {
         let hwFormat = inputNode.outputFormat(forBus: 0)
         hwSampleRate = hwFormat.sampleRate
 
-        NSLog("[Yappie] Recording format: %d ch, %.0f Hz", hwFormat.channelCount, hwFormat.sampleRate)
+        debugLog("[Yappie] Recording format: \(hwFormat.channelCount) ch, \(hwFormat.sampleRate) Hz")
 
         inputNode.installTap(onBus: 0, bufferSize: 4096, format: hwFormat) { [weak self] buffer, _ in
             guard let self, let channelData = buffer.floatChannelData else { return }

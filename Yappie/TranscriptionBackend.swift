@@ -24,7 +24,7 @@ final class BackendManager {
         var enabledBackends: [TranscriptionBackend] = []
         var loadTime: TimeInterval?
         for config in store.backends where config.enabled {
-            debugLog("[Yappie] Processing backend: \(config.name) type=\(config.type.rawValue)")
+            debugLog("[Yappie] Processing backend [\(enabledBackends.count)]: \(config.name) type=\(config.type.rawValue) model=\(config.model ?? "none")")
             switch config.type {
             case .api:
                 enabledBackends.append(APIBackend(config: config))
@@ -45,7 +45,6 @@ final class BackendManager {
                         debugLog("[Yappie] WhisperKit model loaded successfully")
                     } catch {
                         debugLog("[Yappie] WhisperKit model FAILED to load: \(error)")
-                        NSLog("[Yappie] Failed to load local model: %@", "\(error)")
                     }
                 }
             }
@@ -64,7 +63,7 @@ final class BackendManager {
                 let text = try await backend.transcribe(wavData: wavData)
                 return TranscriptionResult(text: text, backendIndex: index)
             } catch {
-                NSLog("[Yappie] Backend %d failed: %@", index, "\(error)")
+                debugLog("[Yappie] Backend \(index) failed: \(error)")
                 continue
             }
         }

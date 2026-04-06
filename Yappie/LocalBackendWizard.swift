@@ -33,16 +33,14 @@ struct LocalModelSelectionView: View {
     @State private var isLoadingModels = false
     @State private var showDownload = false
 
-    private var recommendedVariant: String {
-        LocalModelManager.recommendedModelForDevice()
-    }
+    private let recommendedVariant = LocalModelManager.recommendedVariant
 
     var body: some View {
         if showDownload, let variant = selectedVariant {
             LocalModelDownloadView(
                 variant: variant,
-                displayName: displayName(for: variant),
-                sizeDescription: sizeDescription(for: variant),
+                displayName: LocalModelManager.displayName(for: variant),
+                sizeDescription: LocalModelManager.sizeDescription(for: variant),
                 language: selectedLanguage,
                 store: store,
                 existingBackend: existingBackend,
@@ -213,7 +211,7 @@ struct LocalModelSelectionView: View {
                     isLoadingModels = false
                 }
             } catch {
-                NSLog("[Yappie] Failed to fetch model list: %@", "\(error)")
+                debugLog("[Yappie] Failed to fetch model list: \(error)")
                 await MainActor.run {
                     isLoadingModels = false
                 }
@@ -221,13 +219,6 @@ struct LocalModelSelectionView: View {
         }
     }
 
-    private func displayName(for variant: String) -> String {
-        LocalModelManager.curatedModels.first { $0.variant == variant }?.displayName ?? variant
-    }
-
-    private func sizeDescription(for variant: String) -> String {
-        LocalModelManager.curatedModels.first { $0.variant == variant }?.sizeDescription ?? "Unknown size"
-    }
 }
 
 // MARK: - Curated Model Card
@@ -481,9 +472,7 @@ struct LocalModelDownloadView: View {
             return "Downloading..."
         }
         let downloaded = Int64(downloadProgress * Double(curated.sizeBytes))
-        let formatter = ByteCountFormatter()
-        formatter.countStyle = .file
-        return "\(formatter.string(fromByteCount: downloaded)) of \(sizeDescription)"
+        return "\(LocalModelManager.byteFormatter.string(fromByteCount: downloaded)) of \(sizeDescription)"
     }
 
     private func startDownload() {
