@@ -39,8 +39,8 @@ final class TCPBackendTests: XCTestCase {
 
         let config = BackendConfig(name: "Test", type: .tcp, enabled: true, host: "127.0.0.1", port: 19876)
         let client = TCPBackend(config: config)
-        let wavData = Data(repeating: 0, count: 100)
-        let result = try await client.transcribe(wavData: wavData)
+        let samples = [Float](repeating: 0, count: 100)
+        let result = try await client.transcribe(audioSamples: samples)
         XCTAssertEqual(result, "Hello world")
     }
 
@@ -51,10 +51,10 @@ final class TCPBackendTests: XCTestCase {
 
         let config = BackendConfig(name: "Test", type: .tcp, enabled: true, host: "127.0.0.1", port: 19877)
         let client = TCPBackend(config: config)
-        let wavData = Data(repeating: 0, count: 100)
+        let samples = [Float](repeating: 0, count: 100)
 
         do {
-            _ = try await client.transcribe(wavData: wavData)
+            _ = try await client.transcribe(audioSamples: samples)
             XCTFail("Should have thrown")
         } catch let error as TranscriptionError {
             XCTAssertEqual(error, .serverError("GPU out of memory"))

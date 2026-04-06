@@ -2,6 +2,17 @@
 import Foundation
 
 enum WAVEncoder {
+    static func encode(floatSamples: [Float], sampleRate: UInt32) -> Data {
+        var pcmData = Data(count: floatSamples.count * MemoryLayout<Int16>.size)
+        pcmData.withUnsafeMutableBytes { raw in
+            let dst = raw.bindMemory(to: Int16.self)
+            for (i, s) in floatSamples.enumerated() {
+                dst[i] = Int16(max(-32767, min(32767, s * 32767)))
+            }
+        }
+        return encode(pcmData: pcmData, sampleRate: sampleRate, channels: 1, bitsPerSample: 16)
+    }
+
     static func encode(pcmData: Data, sampleRate: UInt32, channels: UInt16, bitsPerSample: UInt16) -> Data {
         let byteRate = sampleRate * UInt32(channels) * UInt32(bitsPerSample / 8)
         let blockAlign = channels * (bitsPerSample / 8)

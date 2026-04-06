@@ -24,17 +24,8 @@ final class LocalBackend: TranscriptionBackend {
         debugLog("[Yappie] WhisperKit init complete (\(String(format: "%.1f", loadDuration))s)")
     }
 
-    func transcribe(wavData: Data) async throws -> String {
-        debugLog("[Yappie] LocalBackend.transcribe: \(wavData.count) bytes, language=\(language ?? "auto")")
-        let tempURL = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent(UUID().uuidString)
-            .appendingPathExtension("wav")
-
-        defer {
-            try? FileManager.default.removeItem(at: tempURL)
-        }
-
-        try wavData.write(to: tempURL)
+    func transcribe(audioSamples: [Float]) async throws -> String {
+        debugLog("[Yappie] LocalBackend.transcribe: \(audioSamples.count) samples, language=\(language ?? "auto")")
 
         let options = DecodingOptions(
             task: .transcribe,
@@ -45,7 +36,7 @@ final class LocalBackend: TranscriptionBackend {
         )
 
         let results = try await pipe.transcribe(
-            audioPath: tempURL.path,
+            audioArray: audioSamples,
             decodeOptions: options
         )
 

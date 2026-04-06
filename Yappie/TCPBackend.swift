@@ -19,8 +19,9 @@ final class TCPBackend: TranscriptionBackend {
         self.port = UInt16(config.port ?? 9876)
     }
 
-    func transcribe(wavData: Data) async throws -> String {
-        try await withThrowingTaskGroup(of: String.self) { group in
+    func transcribe(audioSamples: [Float]) async throws -> String {
+        let wavData = WAVEncoder.encode(floatSamples: audioSamples, sampleRate: 16000)
+        return try await withThrowingTaskGroup(of: String.self) { group in
             group.addTask {
                 try await self.connectAndTranscribe(wavData: wavData)
             }
