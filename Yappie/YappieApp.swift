@@ -1,6 +1,7 @@
 // Yappie/YappieApp.swift
 import SwiftUI
 import AVFoundation
+import UserNotifications
 
 @main
 struct YappieApp: App {
@@ -9,9 +10,27 @@ struct YappieApp: App {
 
     var body: some Scene {
         MenuBarExtra("Yappie", image: "MenuBarIcon") {
+            switch appState.modelLoadingStatus {
+            case .loading:
+                Text("Preparing model…")
+                    .foregroundStyle(.secondary)
+                Divider()
+            case .failed:
+                Text("Model failed to load")
+                    .foregroundStyle(.red)
+                Button("Open Preferences…") {
+                    prefsWindowController.backendStore = appState.backendStore
+                    prefsWindowController.show()
+                }
+                Divider()
+            case .idle, .ready:
+                EmptyView()
+            }
+
             Button("Toggle Recording") {
                 appState.toggleRecording()
             }
+            .disabled(appState.modelLoadingStatus == .loading)
 
             Divider()
 
@@ -31,13 +50,15 @@ struct YappieApp: App {
     }
 
     init() {
-        // Request mic permission — AVAudioApplication works for ad-hoc signed apps
         AVAudioApplication.requestRecordPermission { granted in
             if granted {
                 debugLog("[Yappie] Mic permission granted")
             } else {
-                debugLog("[Yappie] Mic permission denied — user must enable in System Settings")
+                debugLog("[Yappie] Mic permission denied. Enable in System Settings.")
             }
+        }
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
+            debugLog("[Yappie] Notification permission: \(granted ? "granted" : "denied")")
         }
         _ = TextDelivery.checkAccessibility(prompt: true)
     }

@@ -141,7 +141,7 @@ struct PreferencesView: View {
                 Spacer()
             } else {
                 ScrollView {
-                    let enabledBackends = backendStore.backends.filter { $0.enabled }
+                    let enabledBackends = backendStore.enabledBackends
                     VStack(spacing: 8) {
                         ForEach(backendStore.backends) { backend in
                             let hasAPIKey = KeychainHelper.get(forBackendID: backend.id) != nil
@@ -270,8 +270,8 @@ struct BackendCardView: View {
     }
 
     private func deleteBackend() {
-        if backend.type == .local {
-            try? LocalModelManager.deleteModel()
+        if backend.type == .local, let variant = backend.model {
+            try? LocalModelManager.deleteModel(variant: variant)
         }
         if let index = store.backends.firstIndex(where: { $0.id == backend.id }) {
             store.remove(at: index)
@@ -307,7 +307,7 @@ struct BackendCardView: View {
             parts.append(backend.language.flatMap { code in
                 Locale.current.localizedString(forLanguageCode: code) ?? code
             } ?? "Auto-detect")
-            if let size = LocalModelManager.modelSizeOnDisk() {
+            if let model = backend.model, let size = LocalModelManager.modelSizeOnDisk(variant: model) {
                 parts.append(size)
             }
             return parts.joined(separator: " \u{00B7} ")

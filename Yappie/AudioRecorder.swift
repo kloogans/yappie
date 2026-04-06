@@ -20,14 +20,14 @@ final class AudioRecorder {
         // AVAudioEngine always uses the system default, so we must change it
         let originalDevice = Self.getDefaultInputDevice()
         let builtInID = Self.findBuiltInMicID()
-        debugLog("[Yappie DEBUG] Default input device: \(originalDevice), built-in mic: \(builtInID.map { String($0) } ?? "nil")")
+        debugLog("[Yappie] Default input device: \(originalDevice), built-in mic: \(builtInID.map { String($0) } ?? "nil")")
         if let builtInID, builtInID != originalDevice {
             Self.setDefaultInputDevice(builtInID)
-            debugLog("[Yappie DEBUG] Switched default input to built-in mic (ID: \(builtInID))")
+            debugLog("[Yappie] Switched default input to built-in mic (ID: \(builtInID))")
         } else if builtInID == nil {
-            debugLog("[Yappie DEBUG] WARNING: No built-in mic found!")
+            debugLog("[Yappie] WARNING: No built-in mic found!")
         } else {
-            debugLog("[Yappie DEBUG] Already using built-in mic")
+            debugLog("[Yappie] Already using built-in mic")
         }
 
         // Create a fresh engine each time (device binding is per-engine)

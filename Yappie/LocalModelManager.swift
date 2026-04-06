@@ -87,21 +87,13 @@ enum LocalModelManager {
         return appSupport.appendingPathComponent("Yappie/Models", isDirectory: true)
     }
 
-    static func downloadedModel() -> String? {
-        let modelsDir = modelDirectoryURL()
-        guard let contents = try? FileManager.default.contentsOfDirectory(
-            at: modelsDir, includingPropertiesForKeys: nil
-        ) else { return nil }
-        return contents.first { item in
-            var isDir: ObjCBool = false
-            FileManager.default.fileExists(atPath: item.path, isDirectory: &isDir)
-            return isDir.boolValue
-        }?.lastPathComponent
-    }
-
-    static func downloadedModelDirectoryPath() -> String? {
-        guard let variant = downloadedModel() else { return nil }
-        return modelDirectoryURL().appendingPathComponent(variant).path
+    static func modelDirectoryPath(for variant: String) -> String? {
+        let path = modelDirectoryURL().appendingPathComponent(variant).path
+        var isDir: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: path, isDirectory: &isDir), isDir.boolValue else {
+            return nil
+        }
+        return path
     }
 
     static func download(variant: String, progress: @escaping (Double) -> Void) async throws -> URL {
@@ -126,15 +118,14 @@ enum LocalModelManager {
         return destination
     }
 
-    static func deleteModel() throws {
-        let modelsDir = modelDirectoryURL()
-        if FileManager.default.fileExists(atPath: modelsDir.path) {
-            try FileManager.default.removeItem(at: modelsDir)
+    static func deleteModel(variant: String) throws {
+        let modelDir = modelDirectoryURL().appendingPathComponent(variant)
+        if FileManager.default.fileExists(atPath: modelDir.path) {
+            try FileManager.default.removeItem(at: modelDir)
         }
     }
 
-    static func modelSizeOnDisk() -> String? {
-        guard let variant = downloadedModel() else { return nil }
+    static func modelSizeOnDisk(variant: String) -> String? {
         let modelPath = modelDirectoryURL().appendingPathComponent(variant)
         guard let enumerator = FileManager.default.enumerator(at: modelPath, includingPropertiesForKeys: [.fileSizeKey]) else {
             return nil

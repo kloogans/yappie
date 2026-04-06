@@ -1,4 +1,4 @@
-.PHONY: build run open clean test
+.PHONY: build run open clean deepclean test
 
 SCHEME = Yappie
 BUILD_DIR = .build
@@ -29,8 +29,17 @@ release:
 	xcodebuild -project Yappie.xcodeproj -scheme $(SCHEME) -configuration Release -arch $(ARCH) build
 
 test:
-	xcodebuild -project Yappie.xcodeproj -scheme $(SCHEME) -arch $(ARCH) test
+	arch -arm64 xcodebuild -project Yappie.xcodeproj -scheme $(SCHEME) -destination 'platform=macOS' test
 
 clean:
 	xcodebuild -project Yappie.xcodeproj -scheme $(SCHEME) clean
 	rm -rf $(BUILD_DIR)
+
+deepclean: clean
+	@echo "Clearing DerivedData..."
+	@rm -rf ~/Library/Developer/Xcode/DerivedData/Yappie-*
+	@echo "Resetting Launch Services for Yappie..."
+	@/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister -u /Applications/Yappie.app 2>/dev/null || true
+	@echo "Flushing preference caches..."
+	@killall cfprefsd 2>/dev/null || true
+	@echo "Deep clean complete."

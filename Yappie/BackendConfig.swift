@@ -50,6 +50,10 @@ final class BackendStore: ObservableObject {
         load()
     }
 
+    var enabledBackends: [BackendConfig] {
+        backends.filter { $0.enabled }
+    }
+
     func load() {
         guard let data = UserDefaults.standard.data(forKey: key),
               let decoded = try? Self.decoder.decode([BackendConfig].self, from: data) else {

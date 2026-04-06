@@ -26,7 +26,7 @@ struct LocalModelSelectionView: View {
     var onBack: () -> Void
 
     @State private var selectedVariant: String?
-    @State private var selectedLanguage: String? = nil
+    @State private var selectedLanguage: String? = "en"
     @State private var showSearch = false
     @State private var searchText = ""
     @State private var allModels: [String] = []
@@ -71,7 +71,7 @@ struct LocalModelSelectionView: View {
                     .foregroundStyle(.secondary)
                 Picker("", selection: $selectedLanguage) {
                     ForEach(supportedLanguages, id: \.name) { lang in
-                        Text(lang.name).tag(lang.code)
+                        Text(lang.name).tag(lang.code as String?)
                     }
                 }
                 .frame(width: 140)
@@ -408,6 +408,18 @@ struct LocalModelDownloadView: View {
             .cornerRadius(8)
             .padding(.horizontal, 40)
 
+            HStack(spacing: 6) {
+                Image(systemName: "info.circle")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text("The first time the model loads, macOS needs to optimize it for your hardware. This can take a few minutes but only happens once.")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+            }
+            .padding(.horizontal, 40)
+            .padding(.top, 4)
+
             Button("Done") {
                 if var existing = existingBackend {
                     existing.model = variant
@@ -482,8 +494,6 @@ struct LocalModelDownloadView: View {
 
         downloadTask = Task {
             do {
-                try? LocalModelManager.deleteModel()
-
                 _ = try await LocalModelManager.download(variant: variant) { progress in
                     Task { @MainActor in
                         downloadProgress = progress
@@ -491,12 +501,12 @@ struct LocalModelDownloadView: View {
                 }
 
                 await MainActor.run {
-                    actualSize = LocalModelManager.modelSizeOnDisk()
+                    actualSize = LocalModelManager.modelSizeOnDisk(variant: variant)
                     isComplete = true
                     isDownloading = false
                 }
             } catch is CancellationError {
-                try? LocalModelManager.deleteModel()
+                try? LocalModelManager.deleteModel(variant: variant)
             } catch {
                 await MainActor.run {
                     self.error = error.localizedDescription

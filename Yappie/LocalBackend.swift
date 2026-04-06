@@ -5,25 +5,28 @@ import WhisperKit
 final class LocalBackend: TranscriptionBackend {
     private let pipe: WhisperKit
     private let language: String?
+    let loadDuration: TimeInterval
 
     init(modelFolder: String, language: String?) async throws {
         debugLog("[Yappie] WhisperKit init starting for: \(modelFolder)")
+        let startTime = CFAbsoluteTimeGetCurrent()
         let config = WhisperKitConfig(
             modelFolder: modelFolder,
-            verbose: true,
-            logLevel: .debug,
+            verbose: false,
+            logLevel: .error,
             prewarm: true,
             load: true,
             download: false
         )
         self.pipe = try await WhisperKit(config)
         self.language = language
-        debugLog("[Yappie] WhisperKit init complete")
+        self.loadDuration = CFAbsoluteTimeGetCurrent() - startTime
+        debugLog("[Yappie] WhisperKit init complete (\(String(format: "%.1f", loadDuration))s)")
     }
 
     func transcribe(wavData: Data) async throws -> String {
         let lang = language ?? "en"
-        debugLog("[Yappie DEBUG] LocalBackend.transcribe: \(wavData.count) bytes, language=\(lang)")
+        debugLog("[Yappie] LocalBackend.transcribe: \(wavData.count) bytes, language=\(lang)")
         let tempURL = URL(fileURLWithPath: NSTemporaryDirectory())
             .appendingPathComponent(UUID().uuidString)
             .appendingPathExtension("wav")
@@ -33,11 +36,6 @@ final class LocalBackend: TranscriptionBackend {
         }
 
         try wavData.write(to: tempURL)
-        // Save a debug copy
-        let debugCopy = URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent("Desktop/yappie-debug.wav")
-        try? wavData.write(to: debugCopy)
-        debugLog("[Yappie DEBUG] Wrote temp WAV to \(tempURL.path)")
-        debugLog("[Yappie DEBUG] Debug copy saved to ~/Desktop/yappie-debug.wav")
 
         let options = DecodingOptions(
             task: .transcribe,
