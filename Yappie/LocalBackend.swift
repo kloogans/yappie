@@ -3,8 +3,8 @@ import Foundation
 import WhisperKit
 
 final class LocalBackend: TranscriptionBackend {
-    private let pipe: WhisperKit
-    private let language: String?
+    let pipe: WhisperKit
+    let language: String?
     let loadDuration: TimeInterval
 
     init(modelFolder: String, language: String?) async throws {

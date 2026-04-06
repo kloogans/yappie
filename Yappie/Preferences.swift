@@ -7,6 +7,7 @@ struct PreferencesView: View {
     @AppStorage("deliveryMode") private var deliveryMode: DeliveryMode = .clipboardAndPaste
     @AppStorage("hotkeyCode") private var hotkeyCode: Int = -1
     @AppStorage("hotkeyModifiers") private var hotkeyModifiers: Int = 0
+    @AppStorage("streamingEnabled") private var streamingEnabled: Bool = false
     @ObservedObject var appState: AppState
     @State private var showAddWizard = false
 
@@ -59,6 +60,21 @@ struct PreferencesView: View {
                     Text("Using Fn key. Click the field above to set a custom hotkey.")
                         .font(.caption2)
                         .foregroundStyle(.tertiary)
+                }
+
+                Divider()
+                    .padding(.vertical, 4)
+
+                Toggle("Streaming mode", isOn: $streamingEnabled)
+
+                Text("Types text as you speak instead of transcribing after you stop. Requires a local on-device backend.")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+
+                if streamingEnabled && !appState.backendStore.enabledBackends.contains(where: { $0.type == .local }) {
+                    Label("No local backend configured. Will fall back to batch mode.", systemImage: "exclamation.triangle.fill")
+                        .font(.caption2)
+                        .foregroundStyle(.orange)
                 }
             }
 

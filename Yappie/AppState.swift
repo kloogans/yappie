@@ -12,6 +12,7 @@ enum AppStatus {
     case idle
     case recording
     case transcribing
+    case streaming
 }
 
 enum ModelLoadingStatus {
@@ -32,6 +33,7 @@ final class AppState: ObservableObject {
     @AppStorage("deliveryMode") var deliveryMode: DeliveryMode = .clipboardAndPaste
     @AppStorage("hotkeyCode") var hotkeyCode: Int = -1
     @AppStorage("hotkeyModifiers") var hotkeyModifiers: Int = 0
+    @AppStorage("streamingEnabled") var streamingEnabled: Bool = false
 
     private let recorder = AudioRecorder()
     let backendStore = BackendStore()
@@ -45,6 +47,7 @@ final class AppState: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private weak var statusItemButton: NSStatusBarButton?
     private var preloadTask: Task<Void, Never>?
+    private var streamingTranscriber: StreamingTranscriber?
     private var notificationsAuthorized = false
 
     var statusIcon: String {
@@ -52,6 +55,7 @@ final class AppState: ObservableObject {
         case .idle: "mic"
         case .recording: "mic.fill"
         case .transcribing: "ellipsis.circle"
+        case .streaming: "waveform"
         }
     }
 
@@ -178,6 +182,12 @@ final class AppState: ObservableObject {
             showNotification(body: "Speech model failed to load. Open Preferences to fix.")
             return
         }
+
+        if streamingEnabled, let localBackend = cachedManager?.primaryLocalBackend {
+            startStreaming(with: localBackend)
+            return
+        }
+
         do {
             try recorder.startRecording()
             AudioFeedback.playStart()
@@ -191,7 +201,36 @@ final class AppState: ObservableObject {
         }
     }
 
+    private func startStreaming(with localBackend: LocalBackend) {
+        let transcriber = StreamingTranscriber(pipe: localBackend.pipe, language: localBackend.language)
+        transcriber.onTextConfirmed = { text in
+            StreamingTextInjector.type(text)
+        }
+        self.streamingTranscriber = transcriber
+        AudioFeedback.playStart()
+        status = .streaming
+        recordingDuration = 0
+        durationTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            self?.recordingDuration += 0.1
+        }
+        Task {
+            do {
+                try await transcriber.start()
+            } catch {
+                debugLog("[Yappie] Streaming failed: \(error)")
+                status = .idle
+                durationTimer?.invalidate()
+                durationTimer = nil
+                streamingTranscriber = nil
+            }
+        }
+    }
+
     func stopRecording() {
+        if status == .streaming {
+            stopStreaming()
+            return
+        }
         guard status == .recording else { return }
         durationTimer?.invalidate()
         durationTimer = nil
@@ -246,10 +285,22 @@ final class AppState: ObservableObject {
         debugLog("[Yappie] Preload cancelled by user")
     }
 
+    private func stopStreaming() {
+        durationTimer?.invalidate()
+        durationTimer = nil
+        AudioFeedback.playStop()
+        let transcriber = streamingTranscriber
+        streamingTranscriber = nil
+        status = .idle
+        Task {
+            await transcriber?.stop()
+        }
+    }
+
     func toggleRecording() {
         if status == .idle {
             startRecording()
-        } else if status == .recording {
+        } else if status == .recording || status == .streaming {
             stopRecording()
         }
     }
@@ -281,6 +332,9 @@ final class AppState: ObservableObject {
             switch status {
             case .recording:
                 button.title = " REC"
+                button.imagePosition = .imageLeading
+            case .streaming:
+                button.title = " STREAM"
                 button.imagePosition = .imageLeading
             case .transcribing:
                 button.title = " …"

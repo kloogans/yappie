@@ -85,6 +85,10 @@ final class BackendManager {
         return BackendManager(backends: enabledBackends, localModelLoadTime: loadTime)
     }
 
+    var primaryLocalBackend: LocalBackend? {
+        backends.compactMap { $0 as? LocalBackend }.first
+    }
+
     func transcribe(audioSamples: [Float]) async throws -> TranscriptionResult {
         guard !backends.isEmpty else {
             throw TranscriptionError.allBackendsFailed

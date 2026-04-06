@@ -31,10 +31,12 @@
 		B7B6BC8DDFA9B7C6656E3F7C /* TextDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485A1CB8C2C7F718F6172DA5 /* TextDelivery.swift */; };
 		BF55640D266C9A1886370A42 /* TranscriptionClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867BC64A19693BFF9DCB0A61 /* TranscriptionClientTests.swift */; };
 		CD7516BE42982D77432879E0 /* LocalModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74196C683BEB044C4B0C3714 /* LocalModelManager.swift */; };
+		D546AC88B7F3E09DD2B3189A /* StreamingTextInjector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CBB2C9B67B1C75217480AB6 /* StreamingTextInjector.swift */; };
 		D84F31F18C958916277BCEC3 /* DebugLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB075591873692F849C378D /* DebugLog.swift */; };
 		D870D2225087ED76B4C1EED8 /* HotkeyRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15FF2A622F9BA1A8C7003EBF /* HotkeyRecorderView.swift */; };
 		E0478D017F5D62349AE8B38F /* BackendManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066E40FF62C5DECAF4FED4B9 /* BackendManagerTests.swift */; };
 		E5EE08F65CA6474DACC386C0 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DB11B3EC1C2D7CD49724A5 /* HotkeyManager.swift */; };
+		F0339075C222C31192161FBD /* StreamingTranscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = C252E4B2A931D8B2A3563100 /* StreamingTranscriber.swift */; };
 		F162E61CD1760EAC983604E9 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9183C2CC788F1A74E2C5475F /* Preferences.swift */; };
 		F8DE11874D83323D8FFB5596 /* APIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4911A675EE3280F24A6F5BE4 /* APIBackend.swift */; };
 		FD473A48EF8AFDDC42444F31 /* TCPBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CC030ECC0438B7DA8639B6 /* TCPBackend.swift */; };
@@ -65,6 +67,7 @@
 		5F05B11A4FF80336D6301BE7 /* yappie-logo.svg */ = {isa = PBXFileReference; path = "yappie-logo.svg"; sourceTree = "<group>"; };
 		60F828B0D369289846BD54EC /* yappie-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "yappie-logo.png"; sourceTree = "<group>"; };
 		74196C683BEB044C4B0C3714 /* LocalModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalModelManager.swift; sourceTree = "<group>"; };
+		7CBB2C9B67B1C75217480AB6 /* StreamingTextInjector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingTextInjector.swift; sourceTree = "<group>"; };
 		85EAF3A78D7EA72EF360F9CB /* BackendConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendConfigTests.swift; sourceTree = "<group>"; };
 		8659DA66CD5A72C5B348C6FF /* BackendWizard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendWizard.swift; sourceTree = "<group>"; };
 		867BC64A19693BFF9DCB0A61 /* TranscriptionClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionClientTests.swift; sourceTree = "<group>"; };
@@ -76,6 +79,7 @@
 		A60A0C7B180D9FACE31987D9 /* knock_start.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = knock_start.wav; sourceTree = "<group>"; };
 		AAC1947CE64F0157000D73B4 /* LocalBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalBackend.swift; sourceTree = "<group>"; };
 		BE2646FCFEF3CB04BF2B9CEA /* YappieApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YappieApp.swift; sourceTree = "<group>"; };
+		C252E4B2A931D8B2A3563100 /* StreamingTranscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingTranscriber.swift; sourceTree = "<group>"; };
 		C9C4F3252BDEBA6D57592F7D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C9CF375620703B7140FE0B09 /* TranscriptionBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionBackend.swift; sourceTree = "<group>"; };
 		D2CC030ECC0438B7DA8639B6 /* TCPBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCPBackend.swift; sourceTree = "<group>"; };
@@ -134,6 +138,8 @@
 				455D21BF0C6CCD06FC7E5158 /* LocalBackendWizard.swift */,
 				74196C683BEB044C4B0C3714 /* LocalModelManager.swift */,
 				9183C2CC788F1A74E2C5475F /* Preferences.swift */,
+				7CBB2C9B67B1C75217480AB6 /* StreamingTextInjector.swift */,
+				C252E4B2A931D8B2A3563100 /* StreamingTranscriber.swift */,
 				D2CC030ECC0438B7DA8639B6 /* TCPBackend.swift */,
 				485A1CB8C2C7F718F6172DA5 /* TextDelivery.swift */,
 				C9CF375620703B7140FE0B09 /* TranscriptionBackend.swift */,
@@ -302,6 +308,8 @@
 				84C1C82427ACBA41F47A0E24 /* LocalBackendWizard.swift in Sources */,
 				CD7516BE42982D77432879E0 /* LocalModelManager.swift in Sources */,
 				F162E61CD1760EAC983604E9 /* Preferences.swift in Sources */,
+				D546AC88B7F3E09DD2B3189A /* StreamingTextInjector.swift in Sources */,
+				F0339075C222C31192161FBD /* StreamingTranscriber.swift in Sources */,
 				FD473A48EF8AFDDC42444F31 /* TCPBackend.swift in Sources */,
 				B7B6BC8DDFA9B7C6656E3F7C /* TextDelivery.swift in Sources */,
 				29A7E5DD71DF7738A4C96EE1 /* TranscriptionBackend.swift in Sources */,
