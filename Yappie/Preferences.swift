@@ -7,8 +7,10 @@ struct PreferencesView: View {
     @AppStorage("deliveryMode") private var deliveryMode: DeliveryMode = .clipboardAndPaste
     @AppStorage("hotkeyCode") private var hotkeyCode: Int = -1
     @AppStorage("hotkeyModifiers") private var hotkeyModifiers: Int = 0
-    @ObservedObject var backendStore: BackendStore
+    @ObservedObject var appState: AppState
     @State private var showAddWizard = false
+
+    private var backendStore: BackendStore { appState.backendStore }
 
     var body: some View {
         TabView {
@@ -151,11 +153,14 @@ struct PreferencesView: View {
                                 else { return nil }
                                 return position == enabledBackends.startIndex ? "PRIMARY" : "FALLBACK"
                             }()
+                            let isLoading = backend.type == .local && backend.enabled && appState.modelLoadingStatus == .loading
                             BackendCardView(
                                 backend: backend,
                                 store: backendStore,
                                 hasAPIKey: hasAPIKey,
-                                priorityLabel: priorityLabel
+                                priorityLabel: priorityLabel,
+                                isLoading: isLoading,
+                                onCancelLoading: { appState.cancelPreload() }
                             )
                             .draggable(backend.id.uuidString) {
                                 BackendCardView(
@@ -212,6 +217,8 @@ struct BackendCardView: View {
     @ObservedObject var store: BackendStore
     let hasAPIKey: Bool
     let priorityLabel: String?
+    var isLoading: Bool = false
+    var onCancelLoading: (() -> Void)?
     @State private var showEdit = false
     @State private var isModelMissing = false
     @State private var diskSize: String?
@@ -239,7 +246,15 @@ struct BackendCardView: View {
                         .foregroundStyle(backend.enabled ? .primary : .secondary)
                     priorityBadge
                 }
-                if isModelMissing {
+                if isLoading {
+                    HStack(spacing: 4) {
+                        ProgressView()
+                            .controlSize(.small)
+                        Text("Loading model...")
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                    }
+                } else if isModelMissing {
                     Text("Model not downloaded. Delete and re-add this backend.")
                         .font(.system(size: 11))
                         .foregroundStyle(.red)
@@ -253,6 +268,18 @@ struct BackendCardView: View {
             }
 
             Spacer()
+
+            if isLoading, let onCancelLoading {
+                Button {
+                    onCancelLoading()
+                } label: {
+                    Image(systemName: "stop.fill")
+                        .font(.system(size: 9))
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.borderless)
+                .help("Stop loading model")
+            }
 
             Button {
                 deleteBackend()

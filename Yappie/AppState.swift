@@ -234,6 +234,16 @@ final class AppState: ObservableObject {
         }
     }
 
+    func cancelPreload() {
+        preloadTask?.cancel()
+        preloadTask = nil
+        if modelLoadingStatus == .loading {
+            modelLoadingStatus = .idle
+        }
+        cachedManager = nil
+        debugLog("[Yappie] Preload cancelled by user")
+    }
+
     func toggleRecording() {
         if status == .idle {
             startRecording()

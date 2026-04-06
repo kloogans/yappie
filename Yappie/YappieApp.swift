@@ -18,7 +18,7 @@ struct YappieApp: App {
                 Text("Model failed to load")
                     .foregroundStyle(.red)
                 Button("Open Preferences…") {
-                    prefsWindowController.backendStore = appState.backendStore
+                    prefsWindowController.appState = appState
                     prefsWindowController.show()
                 }
                 Divider()
@@ -34,7 +34,7 @@ struct YappieApp: App {
             Divider()
 
             Button("Preferences…") {
-                prefsWindowController.backendStore = appState.backendStore
+                prefsWindowController.appState = appState
                 prefsWindowController.show()
             }
             .keyboardShortcut(",", modifiers: .command)
@@ -62,7 +62,7 @@ struct YappieApp: App {
 
 final class PreferencesWindowController: ObservableObject {
     private var window: NSWindow?
-    var backendStore: BackendStore?
+    var appState: AppState?
 
     func show() {
         if let window, window.isVisible {
@@ -71,7 +71,8 @@ final class PreferencesWindowController: ObservableObject {
             return
         }
 
-        let prefsView = PreferencesView(backendStore: backendStore ?? BackendStore())
+        guard let appState else { return }
+        let prefsView = PreferencesView(appState: appState)
         let hostingView = NSHostingView(rootView: prefsView)
         hostingView.frame = NSRect(x: 0, y: 0, width: 500, height: 380)
 
