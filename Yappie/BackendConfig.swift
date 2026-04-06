@@ -7,6 +7,7 @@ import Security
 enum BackendType: String, Codable {
     case api
     case tcp
+    case local
 }
 
 struct BackendConfig: Codable, Identifiable {
@@ -18,10 +19,12 @@ struct BackendConfig: Codable, Identifiable {
     var model: String?
     var host: String?
     var port: Int?
+    var language: String?
 
     init(name: String, type: BackendType, enabled: Bool,
          baseURL: String? = nil, model: String? = nil,
-         host: String? = nil, port: Int? = nil) {
+         host: String? = nil, port: Int? = nil,
+         language: String? = nil) {
         self.id = UUID()
         self.name = name
         self.type = type
@@ -30,6 +33,7 @@ struct BackendConfig: Codable, Identifiable {
         self.model = model
         self.host = host
         self.port = port
+        self.language = language
     }
 }
 
@@ -46,6 +50,10 @@ final class BackendStore: ObservableObject {
         load()
     }
 
+    var enabledBackends: [BackendConfig] {
+        backends.filter { $0.enabled }
+    }
+
     func load() {
         guard let data = UserDefaults.standard.data(forKey: key),
               let decoded = try? Self.decoder.decode([BackendConfig].self, from: data) else {
@@ -58,10 +66,15 @@ final class BackendStore: ObservableObject {
     func save() {
         guard let data = try? Self.encoder.encode(backends) else { return }
         UserDefaults.standard.set(data, forKey: key)
+        UserDefaults.standard.synchronize()
     }
 
-    func add(_ backend: BackendConfig) {
-        backends.append(backend)
+    func add(_ backend: BackendConfig, asPrimary: Bool = false) {
+        if asPrimary {
+            backends.insert(backend, at: 0)
+        } else {
+            backends.append(backend)
+        }
         save()
     }
 

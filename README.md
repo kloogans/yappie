@@ -7,21 +7,33 @@
 </p>
 
 <p align="center">
-  Fast, local-first dictation for macOS.
+  Fast, private dictation for macOS. On-device or cloud. Your choice.
 </p>
 
 ---
 
-Yappie is a small menubar app that records your voice, sends the audio to a speech-to-text backend, and pastes the transcribed text wherever your cursor is. It supports any OpenAI-compatible Whisper API and custom TCP transcription servers, with automatic fallback if your primary backend is unavailable.
+Yappie is a menubar app that turns your voice into text. Press a key, speak, and your words appear wherever your cursor is. It runs Whisper models directly on your Mac using Apple Silicon, so your audio never leaves the device. You can also connect cloud APIs as a fallback or primary backend.
 
 > **Looking for the Linux version?** Check out [Yappie for Linux](https://github.com/kloogans/yappie-linux).
 
-## Getting started
+## Features
+
+- **On-device transcription** powered by [WhisperKit](https://github.com/argmaxinc/WhisperKit) and CoreML. No API keys, no internet, no data leaving your Mac.
+- **Cloud API support** for OpenAI, Groq, and any OpenAI-compatible Whisper endpoint.
+- **Automatic fallback chain.** Set up multiple backends and Yappie tries them in order. If the primary fails, the next one picks up.
+- **Push-to-talk or toggle mode.** Hold a key to record, or click to start and stop.
+- **Custom hotkeys.** Use the default Fn key or set any key combination.
+- **Auto-paste.** Transcribed text goes straight to your cursor. No Cmd+V needed.
+- **Drag-and-drop backend ordering.** Reorder your backends by dragging cards in Preferences.
+- **Lazy-loaded fallbacks.** Only your primary model loads at startup. Fallback models load on first use, keeping startup fast.
+
+## Getting Started
 
 ### Requirements
 
 - macOS 14 or later
-- At least one transcription backend (see [Backends](#backends) below)
+- Apple Silicon (M1 or later) for on-device transcription
+- Intel Macs can use cloud API backends only
 
 ### Install
 
@@ -34,7 +46,7 @@ brew install --cask yappie
 
 **Download:** Grab the latest `.zip` from [Releases](https://github.com/kloogans/yappie/releases), unzip, and drag `Yappie.app` to your Applications folder.
 
-**Build from source:** Requires Xcode.
+**Build from source:** Requires Xcode and [xcodegen](https://github.com/yonaskolb/XcodeGen).
 
 ```bash
 git clone https://github.com/kloogans/yappie.git
@@ -45,29 +57,43 @@ make run
 
 ### Permissions
 
-Yappie needs two macOS permissions to work:
+Yappie needs two macOS permissions:
 
-**Microphone** - You should get a system dialog on first launch. If you don't, go to System Settings > Privacy & Security > Microphone and add Yappie manually.
+**Microphone.** A system dialog should appear on first launch. If not, go to System Settings > Privacy & Security > Microphone and add Yappie.
 
-**Accessibility** - Needed for auto-paste. Go to System Settings > Privacy & Security > Accessibility, click the + button, and add Yappie. Without this, Yappie will still transcribe but you'll need to paste manually with Cmd+V.
+**Accessibility.** Required for auto-paste. Go to System Settings > Privacy & Security > Accessibility, click +, and add Yappie. Without this, Yappie will still transcribe but you'll need to paste manually with Cmd+V.
 
-> **Note:** If you installed via Homebrew and macOS blocks the app or permissions aren't working, try running `xattr -dr com.apple.quarantine /Applications/Yappie.app` in your terminal, then relaunch.
+> **Homebrew note:** If macOS blocks the app or permissions aren't working, run `xattr -dr com.apple.quarantine /Applications/Yappie.app` in your terminal, then relaunch.
 
-## How to use
+## How to Use
 
-**Push-to-talk (default):** Hold the Fn key, speak, then release. Your speech gets transcribed and pasted into the focused app.
+**Push-to-talk (default):** Hold the Fn key, speak, release. Your words get transcribed and pasted into the active app.
 
-**Toggle mode:** Click the Yappie icon in the menu bar to start recording, click again to stop and transcribe.
+**Toggle mode:** Click the Yappie icon in the menu bar to start recording. Click again to stop and transcribe.
 
-You can switch between these modes in Preferences.
+Switch between modes in Preferences > General.
 
 ## Backends
 
-Yappie needs a transcription backend to convert your audio to text. You can configure one or more backends in Preferences > Backends. If you set up multiple backends, Yappie will try them in order and fall back to the next one if the first is unreachable.
+Yappie supports three types of transcription backends. Set up one or more in Preferences > Backends.
 
-### OpenAI-compatible API
+### On-Device (Local Whisper)
 
-Works with any service that implements the `/v1/audio/transcriptions` endpoint. Some examples:
+Runs a Whisper model locally on your Mac using Apple Silicon's Neural Engine. No internet required.
+
+To set up:
+1. Open Preferences > Backends > Add Backend
+2. Select "Local Whisper"
+3. Pick a language and model size
+4. Download the model
+
+Available models range from Tiny (~40 MB, fastest) to Large v3 (~1.5 GB, most accurate). Yappie recommends a model based on your Mac's RAM. The first launch after download takes longer while CoreML compiles the model for your hardware. Subsequent launches load in under a second.
+
+Your primary local model loads at startup. Fallback local models stay unloaded until needed, so adding multiple models won't slow down your Mac.
+
+### OpenAI-Compatible API
+
+Works with any service that implements the `/v1/audio/transcriptions` endpoint.
 
 | Service | Base URL | API key required |
 |---------|----------|-----------------|
@@ -76,54 +102,58 @@ Works with any service that implements the `/v1/audio/transcriptions` endpoint. 
 | [faster-whisper-server](https://github.com/fedirz/faster-whisper-server) | `http://your-server:8000/v1` | No |
 | [LocalAI](https://localai.io) | `http://localhost:8080/v1` | No |
 
-To add one, open Preferences > Backends > Add Backend > OpenAI-Compatible API, then fill in the base URL, API key (if needed), and model name.
-
-API keys are stored in the macOS Keychain, not in plaintext config files.
+API keys are stored in the macOS Keychain.
 
 ### Custom TCP
 
-For custom transcription servers that accept raw audio over a TCP socket. You provide a host and port. Yappie sends the WAV audio data over the connection and reads back the transcribed text.
+For custom transcription servers that accept raw audio over a TCP socket. Provide a host and port. Yappie sends WAV audio data and reads back UTF-8 text.
 
-This works with [Yappie for Linux](https://github.com/kloogans/yappie-linux) and any other server that follows the same simple protocol: receive WAV bytes, respond with UTF-8 text.
+Compatible with [Yappie for Linux](https://github.com/kloogans/yappie-linux) and any server that follows the same protocol.
 
 ## Preferences
 
-Access preferences by clicking the Yappie icon in the menu bar and selecting Preferences.
+Click the Yappie icon in the menu bar and select Preferences.
 
 ### General
 
 | Setting | Options | Default |
 |---------|---------|---------|
-| Recording mode | Push-to-talk (hold Fn) / Toggle (click to start/stop) | Push-to-talk |
+| Recording mode | Push-to-talk (hold key) / Toggle (click to start/stop) | Push-to-talk |
+| Hotkey | Fn key / Custom key combination | Fn |
 | After transcription | Copy and paste / Copy to clipboard only | Copy and paste |
 | Launch at login | On / Off | Off |
 
 ### Backends
 
-Your configured transcription backends are shown as cards. You can:
+Your transcription backends appear as cards. You can:
 
-- **Reorder** them to set priority (top = primary, rest = fallbacks)
+- **Drag and drop** to reorder priority (top = primary, rest = fallbacks)
 - **Enable/disable** individual backends with the toggle
-- **Delete** a backend by right-clicking its card
-- **Add** new backends with the Add Backend button
+- **Edit** a backend by double-clicking its card
+- **Delete** a backend with the trash icon or right-click menu
 
-## Building from source
+New local backends are automatically set as the primary.
+
+## Building from Source
 
 ```bash
 # Build
 make build
 
-# Run
+# Build and run (copies to /Applications, launches, tails debug log)
 make run
 
 # Run tests
 make test
 
-# Clean
+# Clean build artifacts
 make clean
+
+# Deep clean (DerivedData, Launch Services, preference caches)
+make deepclean
 ```
 
-The project uses [xcodegen](https://github.com/yonaskolb/XcodeGen) to generate the Xcode project from `project.yml`. If you modify the project structure, regenerate with:
+The project uses [xcodegen](https://github.com/yonaskolb/XcodeGen) to generate the Xcode project from `project.yml`. If you modify the project structure:
 
 ```bash
 xcodegen generate

@@ -78,4 +78,20 @@ final class BackendManagerTests: XCTestCase {
             XCTFail("Unexpected error type: \(error)")
         }
     }
+
+    func testLocalBackendInFallbackChain() async throws {
+        let local = MockBackend()
+        local.shouldFail = true
+        local.responseText = "local result"
+        let cloud = MockBackend()
+        cloud.responseText = "cloud result"
+
+        let manager = BackendManager(backends: [local, cloud])
+        let result = try await manager.transcribe(wavData: Data([0x00]))
+
+        XCTAssertEqual(result.text, "cloud result")
+        XCTAssertEqual(result.backendIndex, 1)
+        XCTAssertEqual(local.transcribeCallCount, 1)
+        XCTAssertEqual(cloud.transcribeCallCount, 1)
+    }
 }

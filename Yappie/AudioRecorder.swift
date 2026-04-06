@@ -19,9 +19,15 @@ final class AudioRecorder {
         // Switch system default input to built-in mic (if available)
         // AVAudioEngine always uses the system default, so we must change it
         let originalDevice = Self.getDefaultInputDevice()
-        if let builtInID = Self.findBuiltInMicID(), builtInID != originalDevice {
+        let builtInID = Self.findBuiltInMicID()
+        debugLog("[Yappie] Default input device: \(originalDevice), built-in mic: \(builtInID.map { String($0) } ?? "nil")")
+        if let builtInID, builtInID != originalDevice {
             Self.setDefaultInputDevice(builtInID)
-            NSLog("[Yappie] Switched default input to built-in mic (ID: %d)", builtInID)
+            debugLog("[Yappie] Switched default input to built-in mic (ID: \(builtInID))")
+        } else if builtInID == nil {
+            debugLog("[Yappie] WARNING: No built-in mic found!")
+        } else {
+            debugLog("[Yappie] Already using built-in mic")
         }
 
         // Create a fresh engine each time (device binding is per-engine)
@@ -30,7 +36,7 @@ final class AudioRecorder {
         let hwFormat = inputNode.outputFormat(forBus: 0)
         hwSampleRate = hwFormat.sampleRate
 
-        NSLog("[Yappie] Recording format: %d ch, %.0f Hz", hwFormat.channelCount, hwFormat.sampleRate)
+        debugLog("[Yappie] Recording format: \(hwFormat.channelCount) ch, \(hwFormat.sampleRate) Hz")
 
         inputNode.installTap(onBus: 0, bufferSize: 4096, format: hwFormat) { [weak self] buffer, _ in
             guard let self, let channelData = buffer.floatChannelData else { return }

@@ -7,8 +7,10 @@ struct PreferencesView: View {
     @AppStorage("deliveryMode") private var deliveryMode: DeliveryMode = .clipboardAndPaste
     @AppStorage("hotkeyCode") private var hotkeyCode: Int = -1
     @AppStorage("hotkeyModifiers") private var hotkeyModifiers: Int = 0
-    @ObservedObject var backendStore: BackendStore
+    @ObservedObject var appState: AppState
     @State private var showAddWizard = false
+
+    private var backendStore: BackendStore { appState.backendStore }
 
     var body: some View {
         TabView {
@@ -141,7 +143,7 @@ struct PreferencesView: View {
                 Spacer()
             } else {
                 ScrollView {
-                    let enabledBackends = backendStore.backends.filter { $0.enabled }
+                    let enabledBackends = backendStore.enabledBackends
                     VStack(spacing: 8) {
                         ForEach(backendStore.backends) { backend in
                             let hasAPIKey = KeychainHelper.get(forBackendID: backend.id) != nil
@@ -151,12 +153,37 @@ struct PreferencesView: View {
                                 else { return nil }
                                 return position == enabledBackends.startIndex ? "PRIMARY" : "FALLBACK"
                             }()
+                            let isLoading = appState.loadingBackendIDs.contains(backend.id)
                             BackendCardView(
                                 backend: backend,
                                 store: backendStore,
                                 hasAPIKey: hasAPIKey,
-                                priorityLabel: priorityLabel
+                                priorityLabel: priorityLabel,
+                                isLoading: isLoading,
+                                onCancelLoading: { appState.cancelPreload() }
                             )
+                            .draggable(backend.id.uuidString) {
+                                BackendCardView(
+                                    backend: backend,
+                                    store: backendStore,
+                                    hasAPIKey: hasAPIKey,
+                                    priorityLabel: priorityLabel
+                                )
+                                .frame(width: 460)
+                                .opacity(0.8)
+                            }
+                            .dropDestination(for: String.self) { items, _ in
+                                guard let draggedID = items.first,
+                                      let draggedUUID = UUID(uuidString: draggedID),
+                                      let fromIndex = backendStore.backends.firstIndex(where: { $0.id == draggedUUID }),
+                                      let toIndex = backendStore.backends.firstIndex(where: { $0.id == backend.id })
+                                else { return false }
+                                backendStore.move(
+                                    from: IndexSet(integer: fromIndex),
+                                    to: toIndex > fromIndex ? toIndex + 1 : toIndex
+                                )
+                                return true
+                            }
                         }
                     }
                     .padding(.horizontal, 20)
@@ -190,15 +217,27 @@ struct BackendCardView: View {
     @ObservedObject var store: BackendStore
     let hasAPIKey: Bool
     let priorityLabel: String?
+    var isLoading: Bool = false
+    var onCancelLoading: (() -> Void)?
     @State private var showEdit = false
+    @State private var isModelMissing = false
+    @State private var diskSize: String?
 
     var body: some View {
         HStack(spacing: 12) {
             // Type icon
-            Image(systemName: backend.type == .api ? "globe" : "network")
-                .font(.system(size: 16))
-                .foregroundStyle(backend.enabled ? .primary : .tertiary)
-                .frame(width: 24)
+            Group {
+                if backend.type == .local {
+                    Image("AppIcon")
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                } else {
+                    Image(systemName: backend.type == .api ? "globe" : "network")
+                        .font(.system(size: 16))
+                        .foregroundStyle(backend.enabled ? .primary : .tertiary)
+                }
+            }
+            .frame(width: 24)
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
@@ -207,13 +246,47 @@ struct BackendCardView: View {
                         .foregroundStyle(backend.enabled ? .primary : .secondary)
                     priorityBadge
                 }
-                Text(connectionDetail)
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                if isLoading {
+                    HStack(spacing: 4) {
+                        ProgressView()
+                            .controlSize(.small)
+                        Text("Compiling model for your Mac...")
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                    }
+                } else if isModelMissing {
+                    Text("Model not downloaded. Delete and re-add this backend.")
+                        .font(.system(size: 11))
+                        .foregroundStyle(.red)
+                        .lineLimit(2)
+                } else {
+                    HStack(spacing: 0) {
+                        Text(connectionDetail)
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                        if backend.type == .local && priorityLabel == "FALLBACK" {
+                            Text(" · Loads on first use")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                }
             }
 
             Spacer()
+
+            if isLoading, let onCancelLoading {
+                Button {
+                    onCancelLoading()
+                } label: {
+                    Image(systemName: "stop.fill")
+                        .font(.system(size: 9))
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.borderless)
+                .help("Stop loading model")
+            }
 
             Button {
                 deleteBackend()
@@ -259,9 +332,25 @@ struct BackendCardView: View {
         .sheet(isPresented: $showEdit) {
             BackendEditView(backend: backend, store: store)
         }
+        .onAppear {
+            if backend.type == .local, let model = backend.model {
+                let enabled = backend.enabled
+                Task.detached(priority: .utility) {
+                    let missing = enabled && LocalModelManager.modelDirectoryPath(for: model) == nil
+                    let size = LocalModelManager.modelSizeOnDisk(variant: model)
+                    await MainActor.run {
+                        isModelMissing = missing
+                        diskSize = size
+                    }
+                }
+            }
+        }
     }
 
     private func deleteBackend() {
+        if backend.type == .local, let variant = backend.model {
+            try? LocalModelManager.deleteModel(variant: variant)
+        }
         if let index = store.backends.firstIndex(where: { $0.id == backend.id }) {
             store.remove(at: index)
         }
@@ -287,6 +376,18 @@ struct BackendCardView: View {
             return parts.joined(separator: " \u{00B7} ")
         case .tcp:
             return "\(backend.host ?? ""):\(backend.port ?? 0)"
+        case .local:
+            var parts = [String]()
+            if let model = backend.model {
+                parts.append(LocalModelManager.displayName(for: model))
+            }
+            parts.append(backend.language.flatMap { code in
+                Locale.current.localizedString(forLanguageCode: code) ?? code
+            } ?? "Auto-detect")
+            if let size = diskSize {
+                parts.append(size)
+            }
+            return parts.joined(separator: " \u{00B7} ")
         }
     }
 

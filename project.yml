@@ -3,22 +3,35 @@ options:
   bundleIdPrefix: com.kloogans
   deploymentTarget:
     macOS: "14.0"
+packages:
+  WhisperKit:
+    url: https://github.com/argmaxinc/WhisperKit.git
+    from: "0.9.0"
 targets:
   Yappie:
     type: application
     platform: macOS
     sources: [Yappie]
+    dependencies:
+      - package: WhisperKit
+        product: WhisperKit
     info:
       path: Yappie/Info.plist
       properties:
         LSUIElement: true
         NSMicrophoneUsageDescription: "Yappie needs microphone access to record audio for speech-to-text transcription."
     settings:
-      INFOPLIST_FILE: Yappie/Info.plist
-      GENERATE_INFOPLIST_FILE: false
-      ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-      CODE_SIGN_IDENTITY: "Yappie Development"
-      CODE_SIGN_STYLE: Manual
+      base:
+        INFOPLIST_FILE: Yappie/Info.plist
+        GENERATE_INFOPLIST_FILE: false
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_IDENTITY: "Yappie Development"
+        CODE_SIGN_STYLE: Manual
+      configs:
+        Debug:
+          PRODUCT_BUNDLE_IDENTIFIER: com.kloogans.Yappie
+        Release:
+          PRODUCT_BUNDLE_IDENTIFIER: com.kloogans.Yappie
   YappieTests:
     type: bundle.unit-test
     platform: macOS

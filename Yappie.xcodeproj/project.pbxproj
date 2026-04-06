@@ -16,15 +16,22 @@
 		5531C779351837D57CFA8990 /* knock_start.wav in Resources */ = {isa = PBXBuildFile; fileRef = A60A0C7B180D9FACE31987D9 /* knock_start.wav */; };
 		575955EE7345CBD1F6599710 /* knock_stop.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8795AD9D67AC23EBD8DA301C /* knock_stop.wav */; };
 		594F9567F414CE3652C90DE8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DED7819C239D3314B4D00440 /* Assets.xcassets */; };
+		5F23151069E32396CDC760B0 /* LocalBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAC1947CE64F0157000D73B4 /* LocalBackend.swift */; };
 		6B8705F4BFF0614D7D4AE5C7 /* BackendConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4597B7BAF801F4403167660 /* BackendConfig.swift */; };
+		7866DF9363F4B3E9BFF1F25B /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = CB7B300BF9D30C0521FA5FDE /* WhisperKit */; };
+		84C1C82427ACBA41F47A0E24 /* LocalBackendWizard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455D21BF0C6CCD06FC7E5158 /* LocalBackendWizard.swift */; };
 		89D3BB9BF595CF8C304136BB /* WAVEncoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDB2C6A506BFFAD32A38440D /* WAVEncoderTests.swift */; };
 		8A9ACCB0A945B316B494651B /* yappie-logo.svg in Resources */ = {isa = PBXBuildFile; fileRef = 5F05B11A4FF80336D6301BE7 /* yappie-logo.svg */; };
 		9674D4A678AE7D2909163FB1 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD58328E7B5AEC543A2DBFD /* AppState.swift */; };
+		9ADDC8F82AD94F9DE025B2C2 /* LocalBackendTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99D1030A33DFBB76E46D95F9 /* LocalBackendTests.swift */; };
 		9D3D7B498BCFE6285C15FF1E /* WAVEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE4205EA30A135F5B4A21F81 /* WAVEncoder.swift */; };
 		A4364327F6FD0106E53BE4D1 /* AudioFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95CEF7C1E8320AA12186B5BB /* AudioFeedback.swift */; };
+		A7671829224B7FBF79FD07DF /* LocalModelManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AA57E905247821D63A038B /* LocalModelManagerTests.swift */; };
 		AF3EAED1FBB088794B5C2BE5 /* BackendWizard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8659DA66CD5A72C5B348C6FF /* BackendWizard.swift */; };
 		B7B6BC8DDFA9B7C6656E3F7C /* TextDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485A1CB8C2C7F718F6172DA5 /* TextDelivery.swift */; };
 		BF55640D266C9A1886370A42 /* TranscriptionClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867BC64A19693BFF9DCB0A61 /* TranscriptionClientTests.swift */; };
+		CD7516BE42982D77432879E0 /* LocalModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74196C683BEB044C4B0C3714 /* LocalModelManager.swift */; };
+		D84F31F18C958916277BCEC3 /* DebugLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB075591873692F849C378D /* DebugLog.swift */; };
 		D870D2225087ED76B4C1EED8 /* HotkeyRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15FF2A622F9BA1A8C7003EBF /* HotkeyRecorderView.swift */; };
 		E0478D017F5D62349AE8B38F /* BackendManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066E40FF62C5DECAF4FED4B9 /* BackendManagerTests.swift */; };
 		E5EE08F65CA6474DACC386C0 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DB11B3EC1C2D7CD49724A5 /* HotkeyManager.swift */; };
@@ -48,20 +55,26 @@
 		0B58DD35181CE167F8EDFADF /* YappieTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YappieTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		15FF2A622F9BA1A8C7003EBF /* HotkeyRecorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyRecorderView.swift; sourceTree = "<group>"; };
 		25E75F4CDA6FCE2A547C5627 /* APIBackendTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIBackendTests.swift; sourceTree = "<group>"; };
+		2CB075591873692F849C378D /* DebugLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLog.swift; sourceTree = "<group>"; };
+		455D21BF0C6CCD06FC7E5158 /* LocalBackendWizard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalBackendWizard.swift; sourceTree = "<group>"; };
 		485A1CB8C2C7F718F6172DA5 /* TextDelivery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDelivery.swift; sourceTree = "<group>"; };
 		4911A675EE3280F24A6F5BE4 /* APIBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIBackend.swift; sourceTree = "<group>"; };
+		49AA57E905247821D63A038B /* LocalModelManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalModelManagerTests.swift; sourceTree = "<group>"; };
 		4D6FF41D4D350D7BA2CE49E5 /* Yappie.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yappie.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		51DB11B3EC1C2D7CD49724A5 /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
 		5F05B11A4FF80336D6301BE7 /* yappie-logo.svg */ = {isa = PBXFileReference; path = "yappie-logo.svg"; sourceTree = "<group>"; };
 		60F828B0D369289846BD54EC /* yappie-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "yappie-logo.png"; sourceTree = "<group>"; };
+		74196C683BEB044C4B0C3714 /* LocalModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalModelManager.swift; sourceTree = "<group>"; };
 		85EAF3A78D7EA72EF360F9CB /* BackendConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendConfigTests.swift; sourceTree = "<group>"; };
 		8659DA66CD5A72C5B348C6FF /* BackendWizard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendWizard.swift; sourceTree = "<group>"; };
 		867BC64A19693BFF9DCB0A61 /* TranscriptionClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionClientTests.swift; sourceTree = "<group>"; };
 		8795AD9D67AC23EBD8DA301C /* knock_stop.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = knock_stop.wav; sourceTree = "<group>"; };
 		9183C2CC788F1A74E2C5475F /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		95CEF7C1E8320AA12186B5BB /* AudioFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFeedback.swift; sourceTree = "<group>"; };
+		99D1030A33DFBB76E46D95F9 /* LocalBackendTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalBackendTests.swift; sourceTree = "<group>"; };
 		9C8AF58300A051F2E3C91436 /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
 		A60A0C7B180D9FACE31987D9 /* knock_start.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = knock_start.wav; sourceTree = "<group>"; };
+		AAC1947CE64F0157000D73B4 /* LocalBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalBackend.swift; sourceTree = "<group>"; };
 		BE2646FCFEF3CB04BF2B9CEA /* YappieApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YappieApp.swift; sourceTree = "<group>"; };
 		C9C4F3252BDEBA6D57592F7D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C9CF375620703B7140FE0B09 /* TranscriptionBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionBackend.swift; sourceTree = "<group>"; };
@@ -72,6 +85,17 @@
 		FDB2C6A506BFFAD32A38440D /* WAVEncoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WAVEncoderTests.swift; sourceTree = "<group>"; };
 		FDD58328E7B5AEC543A2DBFD /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5D04C12F36E7955174E0143C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7866DF9363F4B3E9BFF1F25B /* WhisperKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		16F049780B1CDE127F421A68 = {
@@ -102,9 +126,13 @@
 				9C8AF58300A051F2E3C91436 /* AudioRecorder.swift */,
 				E4597B7BAF801F4403167660 /* BackendConfig.swift */,
 				8659DA66CD5A72C5B348C6FF /* BackendWizard.swift */,
+				2CB075591873692F849C378D /* DebugLog.swift */,
 				51DB11B3EC1C2D7CD49724A5 /* HotkeyManager.swift */,
 				15FF2A622F9BA1A8C7003EBF /* HotkeyRecorderView.swift */,
 				C9C4F3252BDEBA6D57592F7D /* Info.plist */,
+				AAC1947CE64F0157000D73B4 /* LocalBackend.swift */,
+				455D21BF0C6CCD06FC7E5158 /* LocalBackendWizard.swift */,
+				74196C683BEB044C4B0C3714 /* LocalModelManager.swift */,
 				9183C2CC788F1A74E2C5475F /* Preferences.swift */,
 				D2CC030ECC0438B7DA8639B6 /* TCPBackend.swift */,
 				485A1CB8C2C7F718F6172DA5 /* TextDelivery.swift */,
@@ -123,6 +151,8 @@
 				25E75F4CDA6FCE2A547C5627 /* APIBackendTests.swift */,
 				85EAF3A78D7EA72EF360F9CB /* BackendConfigTests.swift */,
 				066E40FF62C5DECAF4FED4B9 /* BackendManagerTests.swift */,
+				99D1030A33DFBB76E46D95F9 /* LocalBackendTests.swift */,
+				49AA57E905247821D63A038B /* LocalModelManagerTests.swift */,
 				867BC64A19693BFF9DCB0A61 /* TranscriptionClientTests.swift */,
 				FDB2C6A506BFFAD32A38440D /* WAVEncoderTests.swift */,
 			);
@@ -156,6 +186,7 @@
 			buildPhases = (
 				EAF49703F976CB95DC2F4FDA /* Sources */,
 				DA68CF76B403A24E3767825D /* Resources */,
+				5D04C12F36E7955174E0143C /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -163,6 +194,7 @@
 			);
 			name = Yappie;
 			packageProductDependencies = (
+				CB7B300BF9D30C0521FA5FDE /* WhisperKit */,
 			);
 			productName = Yappie;
 			productReference = 4D6FF41D4D350D7BA2CE49E5 /* Yappie.app */;
@@ -209,6 +241,9 @@
 			);
 			mainGroup = 16F049780B1CDE127F421A68;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				FFB0E3EAC8E86E8FCD4F4671 /* XCRemoteSwiftPackageReference "WhisperKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C5425E3CEF1536E3A32E32DA /* Products */;
 			projectDirPath = "";
@@ -243,6 +278,8 @@
 				1DD86F271BDF8C10EEBE5200 /* APIBackendTests.swift in Sources */,
 				0555C30D9BD50290A2F6616A /* BackendConfigTests.swift in Sources */,
 				E0478D017F5D62349AE8B38F /* BackendManagerTests.swift in Sources */,
+				9ADDC8F82AD94F9DE025B2C2 /* LocalBackendTests.swift in Sources */,
+				A7671829224B7FBF79FD07DF /* LocalModelManagerTests.swift in Sources */,
 				BF55640D266C9A1886370A42 /* TranscriptionClientTests.swift in Sources */,
 				89D3BB9BF595CF8C304136BB /* WAVEncoderTests.swift in Sources */,
 			);
@@ -258,8 +295,12 @@
 				29A8F32071442057C6C7B97C /* AudioRecorder.swift in Sources */,
 				6B8705F4BFF0614D7D4AE5C7 /* BackendConfig.swift in Sources */,
 				AF3EAED1FBB088794B5C2BE5 /* BackendWizard.swift in Sources */,
+				D84F31F18C958916277BCEC3 /* DebugLog.swift in Sources */,
 				E5EE08F65CA6474DACC386C0 /* HotkeyManager.swift in Sources */,
 				D870D2225087ED76B4C1EED8 /* HotkeyRecorderView.swift in Sources */,
+				5F23151069E32396CDC760B0 /* LocalBackend.swift in Sources */,
+				84C1C82427ACBA41F47A0E24 /* LocalBackendWizard.swift in Sources */,
+				CD7516BE42982D77432879E0 /* LocalModelManager.swift in Sources */,
 				F162E61CD1760EAC983604E9 /* Preferences.swift in Sources */,
 				FD473A48EF8AFDDC42444F31 /* TCPBackend.swift in Sources */,
 				B7B6BC8DDFA9B7C6656E3F7C /* TextDelivery.swift in Sources */,
@@ -500,6 +541,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		FFB0E3EAC8E86E8FCD4F4671 /* XCRemoteSwiftPackageReference "WhisperKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/argmaxinc/WhisperKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CB7B300BF9D30C0521FA5FDE /* WhisperKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FFB0E3EAC8E86E8FCD4F4671 /* XCRemoteSwiftPackageReference "WhisperKit" */;
+			productName = WhisperKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 178C732C11AF61DF26F2B901 /* Project object */;
 }
