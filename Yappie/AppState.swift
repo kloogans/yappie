@@ -197,12 +197,12 @@ final class AppState: ObservableObject {
         durationTimer = nil
 
         AudioFeedback.playStop()
-        let wavData = recorder.stopRecording()
+        let samples = recorder.stopRecording()
         status = .transcribing
 
         Task { @MainActor in
             do {
-                debugLog("[Yappie] stopRecording: wavData size = \(wavData.count) bytes")
+                debugLog("[Yappie] stopRecording: \(samples.count) samples")
                 let manager: BackendManager
                 if let cached = cachedManager {
                     debugLog("[Yappie] Using cached BackendManager")
@@ -214,7 +214,7 @@ final class AppState: ObservableObject {
                     debugLog("[Yappie] BackendManager created")
                 }
                 debugLog("[Yappie] Starting transcription...")
-                let result = try await manager.transcribe(wavData: wavData)
+                let result = try await manager.transcribe(audioSamples: samples)
                 let enabledBackends = backendStore.enabledBackends
                 let usedBackend = result.backendIndex < enabledBackends.count ? enabledBackends[result.backendIndex] : nil
                 let usedModel = usedBackend?.model ?? "unknown"

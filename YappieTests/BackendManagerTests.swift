@@ -7,7 +7,7 @@ final class MockBackend: TranscriptionBackend {
     var transcribeCallCount = 0
     var responseText = "mock response"
 
-    func transcribe(wavData: Data) async throws -> String {
+    func transcribe(audioSamples: [Float]) async throws -> String {
         transcribeCallCount += 1
         if shouldFail {
             throw TranscriptionError.connectionFailed("Mock connection failed")
@@ -25,7 +25,7 @@ final class BackendManagerTests: XCTestCase {
         fallback.responseText = "fallback result"
 
         let manager = BackendManager(backends: [primary, fallback])
-        let result = try await manager.transcribe(wavData: Data([0x00]))
+        let result = try await manager.transcribe(audioSamples: [0.0])
 
         XCTAssertEqual(result.text, "primary result")
         XCTAssertEqual(result.backendIndex, 0)
@@ -40,7 +40,7 @@ final class BackendManagerTests: XCTestCase {
         fallback.responseText = "fallback result"
 
         let manager = BackendManager(backends: [primary, fallback])
-        let result = try await manager.transcribe(wavData: Data([0x00]))
+        let result = try await manager.transcribe(audioSamples: [0.0])
 
         XCTAssertEqual(result.text, "fallback result")
         XCTAssertEqual(result.backendIndex, 1)
@@ -57,7 +57,7 @@ final class BackendManagerTests: XCTestCase {
         let manager = BackendManager(backends: [primary, fallback])
 
         do {
-            _ = try await manager.transcribe(wavData: Data([0x00]))
+            _ = try await manager.transcribe(audioSamples: [0.0])
             XCTFail("Should have thrown")
         } catch let error as TranscriptionError {
             XCTAssertEqual(error, .allBackendsFailed)
@@ -70,7 +70,7 @@ final class BackendManagerTests: XCTestCase {
         let manager = BackendManager(backends: [])
 
         do {
-            _ = try await manager.transcribe(wavData: Data([0x00]))
+            _ = try await manager.transcribe(audioSamples: [0.0])
             XCTFail("Should have thrown")
         } catch let error as TranscriptionError {
             XCTAssertEqual(error, .allBackendsFailed)
@@ -87,7 +87,7 @@ final class BackendManagerTests: XCTestCase {
         cloud.responseText = "cloud result"
 
         let manager = BackendManager(backends: [local, cloud])
-        let result = try await manager.transcribe(wavData: Data([0x00]))
+        let result = try await manager.transcribe(audioSamples: [0.0])
 
         XCTAssertEqual(result.text, "cloud result")
         XCTAssertEqual(result.backendIndex, 1)

@@ -11,7 +11,8 @@ final class APIBackend: TranscriptionBackend {
         self.apiKey = KeychainHelper.get(forBackendID: config.id)
     }
 
-    func transcribe(wavData: Data) async throws -> String {
+    func transcribe(audioSamples: [Float]) async throws -> String {
+        let wavData = WAVEncoder.encode(floatSamples: audioSamples, sampleRate: 16000)
         let request = try Self.buildRequest(config: config, wavData: wavData, apiKey: apiKey)
 
         let (data, response) = try await URLSession.shared.data(for: request)

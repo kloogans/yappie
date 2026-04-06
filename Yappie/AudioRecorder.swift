@@ -1,9 +1,10 @@
 // Yappie/AudioRecorder.swift
 import AVFoundation
 import CoreAudio
+import WhisperKit
 
 final class AudioRecorder {
-    private var engine: AVAudioEngine?
+    private let engine = AVAudioEngine()
     private var floatSamples = [Float]()
     private let samplesLock = NSLock()
     private var hwSampleRate: Double = 44100
@@ -30,8 +31,8 @@ final class AudioRecorder {
             debugLog("[Yappie] Already using built-in mic")
         }
 
-        // Create a fresh engine each time (device binding is per-engine)
-        let engine = AVAudioEngine()
+        // Reset engine to pick up any device changes
+        engine.reset()
         let inputNode = engine.inputNode
         let hwFormat = inputNode.outputFormat(forBus: 0)
         hwSampleRate = hwFormat.sampleRate
@@ -60,45 +61,32 @@ final class AudioRecorder {
 
         engine.prepare()
         try engine.start()
-        self.engine = engine
     }
 
-    func stopRecording() -> Data {
-        if let engine {
-            engine.inputNode.removeTap(onBus: 0)
-            engine.stop()
-        }
-        engine = nil
+    func stopRecording() -> [Float] {
+        engine.inputNode.removeTap(onBus: 0)
+        engine.stop()
 
         samplesLock.lock()
         let samples = floatSamples
-        floatSamples = []
+        floatSamples.removeAll(keepingCapacity: true)
         samplesLock.unlock()
 
-        // Downsample to 16kHz
-        let ratio = hwSampleRate / targetSampleRate
-        let outputCount = max(0, Int(Double(samples.count) / ratio))
-        var int16Samples = [Int16](repeating: 0, count: outputCount)
+        guard !samples.isEmpty else { return [] }
 
-        for i in 0..<outputCount {
-            let srcIdx = Double(i) * ratio
-            let idx0 = Int(srcIdx)
-            let frac = Float(srcIdx - Double(idx0))
-            let idx1 = min(idx0 + 1, samples.count - 1)
-
-            let sample: Float
-            if idx0 < samples.count {
-                sample = samples[idx0] * (1 - frac) + samples[idx1] * frac
-            } else {
-                sample = 0
-            }
-
-            let clamped = max(-1.0, min(1.0, sample))
-            int16Samples[i] = Int16(clamped * 32767)
+        let inputFormat = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: hwSampleRate, channels: 1, interleaved: false)!
+        guard let inputBuffer = AVAudioPCMBuffer(pcmFormat: inputFormat, frameCapacity: AVAudioFrameCount(samples.count)) else {
+            debugLog("[Yappie] Failed to create input buffer for resampling")
+            return []
         }
+        inputBuffer.frameLength = AVAudioFrameCount(samples.count)
+        memcpy(inputBuffer.floatChannelData![0], samples, samples.count * MemoryLayout<Float>.size)
 
-        let pcmData = int16Samples.withUnsafeBufferPointer { Data(buffer: $0) }
-        return WAVEncoder.encode(pcmData: pcmData, sampleRate: UInt32(targetSampleRate), channels: 1, bitsPerSample: 16)
+        guard let resampled = AudioProcessor.resampleAudio(fromBuffer: inputBuffer, toSampleRate: targetSampleRate, channelCount: 1) else {
+            debugLog("[Yappie] Resampling failed")
+            return []
+        }
+        return AudioProcessor.convertBufferToArray(buffer: resampled)
     }
 
     // MARK: - System Default Device Management
