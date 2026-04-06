@@ -250,7 +250,7 @@ struct BackendCardView: View {
                     HStack(spacing: 4) {
                         ProgressView()
                             .controlSize(.small)
-                        Text("Loading model...")
+                        Text("Compiling model for your Mac...")
                             .font(.system(size: 11))
                             .foregroundStyle(.secondary)
                     }
