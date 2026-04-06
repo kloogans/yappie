@@ -79,11 +79,13 @@ final class AppState: ObservableObject {
             self?.applyRecordingMode()
         }
 
-        // Invalidate cached BackendManager when backends change
+        // Reload backends when config changes (e.g. after wizard adds a new backend)
         backendStore.$backends
+            .dropFirst() // skip initial value (handled by preloadBackends below)
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 self?.cachedManager = nil
+                self?.preloadBackends()
             }
             .store(in: &cancellables)
 
@@ -99,7 +101,10 @@ final class AppState: ObservableObject {
             .sink { [weak self] _ in self?.updateMenuBarText() }
             .store(in: &cancellables)
 
-        // Preload backends (so WhisperKit model is ready before first recording)
+        preloadBackends()
+    }
+
+    private func preloadBackends() {
         if backendStore.enabledBackends.contains(where: { $0.type == .local }) {
             modelLoadingStatus = .loading
             showNotification(title: "Yappie", body: "Preparing speech model. This may take a moment on first launch.", autoDismiss: 5)

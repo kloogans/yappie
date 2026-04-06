@@ -157,6 +157,28 @@ struct PreferencesView: View {
                                 hasAPIKey: hasAPIKey,
                                 priorityLabel: priorityLabel
                             )
+                            .draggable(backend.id.uuidString) {
+                                BackendCardView(
+                                    backend: backend,
+                                    store: backendStore,
+                                    hasAPIKey: hasAPIKey,
+                                    priorityLabel: priorityLabel
+                                )
+                                .frame(width: 460)
+                                .opacity(0.8)
+                            }
+                            .dropDestination(for: String.self) { items, _ in
+                                guard let draggedID = items.first,
+                                      let draggedUUID = UUID(uuidString: draggedID),
+                                      let fromIndex = backendStore.backends.firstIndex(where: { $0.id == draggedUUID }),
+                                      let toIndex = backendStore.backends.firstIndex(where: { $0.id == backend.id })
+                                else { return false }
+                                backendStore.move(
+                                    from: IndexSet(integer: fromIndex),
+                                    to: toIndex > fromIndex ? toIndex + 1 : toIndex
+                                )
+                                return true
+                            }
                         }
                     }
                     .padding(.horizontal, 20)
@@ -192,6 +214,12 @@ struct BackendCardView: View {
     let priorityLabel: String?
     @State private var showEdit = false
 
+    private var isModelMissing: Bool {
+        backend.type == .local
+            && backend.enabled
+            && backend.model.flatMap({ LocalModelManager.modelDirectoryPath(for: $0) }) == nil
+    }
+
     var body: some View {
         HStack(spacing: 12) {
             // Type icon
@@ -215,10 +243,17 @@ struct BackendCardView: View {
                         .foregroundStyle(backend.enabled ? .primary : .secondary)
                     priorityBadge
                 }
-                Text(connectionDetail)
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                if isModelMissing {
+                    Text("Model not downloaded. Delete and re-add this backend.")
+                        .font(.system(size: 11))
+                        .foregroundStyle(.red)
+                        .lineLimit(2)
+                } else {
+                    Text(connectionDetail)
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
             }
 
             Spacer()
