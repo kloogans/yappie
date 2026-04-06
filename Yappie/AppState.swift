@@ -26,6 +26,7 @@ final class AppState: ObservableObject {
     @Published var status: AppStatus = .idle
     @Published var recordingDuration: TimeInterval = 0
     @Published var modelLoadingStatus: ModelLoadingStatus = .idle
+    @Published var loadingBackendIDs: Set<UUID> = []
 
     @AppStorage("recordingMode") var recordingMode: RecordingMode = .pushToTalk
     @AppStorage("deliveryMode") var deliveryMode: DeliveryMode = .clipboardAndPaste
@@ -115,15 +116,18 @@ final class AppState: ObservableObject {
         preloadTask?.cancel()
         modelLoadingStatus = .idle
 
-        let hasLocal = backendStore.enabledBackends.contains(where: { $0.type == .local })
-        if hasLocal {
+        let localIDs = Set(backendStore.enabledBackends.filter { $0.type == .local }.map(\.id))
+        if !localIDs.isEmpty {
+            loadingBackendIDs = localIDs
             modelLoadingStatus = .loading
             showNotification(body: "Preparing speech model. This may take a moment on first launch.", autoDismiss: 5)
         }
         let store = backendStore
         preloadTask = Task { @MainActor [weak self] in
             debugLog("[Yappie] Preloading backends...")
-            let manager = await BackendManager.create(store: store)
+            let manager = await BackendManager.create(store: store) { [weak self] loadedID in
+                self?.loadingBackendIDs.remove(loadedID)
+            }
             guard !Task.isCancelled, let self else { return }
             self.cachedManager = manager
             if let loadTime = manager.localModelLoadTime {
@@ -237,6 +241,7 @@ final class AppState: ObservableObject {
     func cancelPreload() {
         preloadTask?.cancel()
         preloadTask = nil
+        loadingBackendIDs.removeAll()
         if modelLoadingStatus == .loading {
             modelLoadingStatus = .idle
         }

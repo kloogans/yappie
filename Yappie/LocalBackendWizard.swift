@@ -424,7 +424,7 @@ struct LocalModelDownloadView: View {
                         model: variant,
                         language: language
                     )
-                    store.add(config)
+                    store.add(config, asPrimary: true)
                 }
                 onDismiss()
             }

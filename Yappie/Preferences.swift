@@ -153,7 +153,7 @@ struct PreferencesView: View {
                                 else { return nil }
                                 return position == enabledBackends.startIndex ? "PRIMARY" : "FALLBACK"
                             }()
-                            let isLoading = backend.type == .local && backend.enabled && appState.modelLoadingStatus == .loading
+                            let isLoading = appState.loadingBackendIDs.contains(backend.id)
                             BackendCardView(
                                 backend: backend,
                                 store: backendStore,

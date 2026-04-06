@@ -69,8 +69,12 @@ final class BackendStore: ObservableObject {
         UserDefaults.standard.synchronize()
     }
 
-    func add(_ backend: BackendConfig) {
-        backends.append(backend)
+    func add(_ backend: BackendConfig, asPrimary: Bool = false) {
+        if asPrimary {
+            backends.insert(backend, at: 0)
+        } else {
+            backends.append(backend)
+        }
         save()
     }
 

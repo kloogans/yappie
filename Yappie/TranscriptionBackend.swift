@@ -19,7 +19,7 @@ final class BackendManager {
         self.localModelLoadTime = localModelLoadTime
     }
 
-    static func create(store: BackendStore) async -> BackendManager {
+    static func create(store: BackendStore, onBackendLoaded: (@MainActor (UUID) -> Void)? = nil) async -> BackendManager {
         debugLog("[Yappie] BackendManager.create: \(store.backends.count) backends configured")
         var enabledBackends: [TranscriptionBackend] = []
         var loadTime: TimeInterval?
@@ -43,8 +43,10 @@ final class BackendManager {
                         enabledBackends.append(backend)
                         loadTime = backend.loadDuration
                         debugLog("[Yappie] WhisperKit model loaded successfully")
+                        await onBackendLoaded?(config.id)
                     } catch {
                         debugLog("[Yappie] WhisperKit model FAILED to load: \(error)")
+                        await onBackendLoaded?(config.id)
                     }
                 }
             }
