@@ -2,7 +2,7 @@
 import Foundation
 
 protocol TranscriptionBackend {
-    func transcribe(wavData: Data) async throws -> String
+    func transcribe(audioSamples: [Float]) async throws -> String
 }
 
 struct TranscriptionResult {
@@ -21,13 +21,13 @@ actor LazyLocalBackend: TranscriptionBackend {
         self.language = language
     }
 
-    func transcribe(wavData: Data) async throws -> String {
+    func transcribe(audioSamples: [Float]) async throws -> String {
         if loaded == nil {
             debugLog("[Yappie] Lazy-loading fallback model: \(modelPath)")
             loaded = try await LocalBackend(modelFolder: modelPath, language: language)
             debugLog("[Yappie] Fallback model loaded (\(String(format: "%.1f", loaded!.loadDuration))s)")
         }
-        return try await loaded!.transcribe(wavData: wavData)
+        return try await loaded!.transcribe(audioSamples: audioSamples)
     }
 }
 
@@ -85,14 +85,14 @@ final class BackendManager {
         return BackendManager(backends: enabledBackends, localModelLoadTime: loadTime)
     }
 
-    func transcribe(wavData: Data) async throws -> TranscriptionResult {
+    func transcribe(audioSamples: [Float]) async throws -> TranscriptionResult {
         guard !backends.isEmpty else {
             throw TranscriptionError.allBackendsFailed
         }
 
         for (index, backend) in backends.enumerated() {
             do {
-                let text = try await backend.transcribe(wavData: wavData)
+                let text = try await backend.transcribe(audioSamples: audioSamples)
                 return TranscriptionResult(text: text, backendIndex: index)
             } catch {
                 debugLog("[Yappie] Backend \(index) failed: \(error)")
