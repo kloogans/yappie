@@ -44,9 +44,11 @@ final class BackendManager {
                         loadTime = backend.loadDuration
                         debugLog("[Yappie] WhisperKit model loaded successfully")
                         await onBackendLoaded?(config.id)
+                        await Task.yield()
                     } catch {
                         debugLog("[Yappie] WhisperKit model FAILED to load: \(error)")
                         await onBackendLoaded?(config.id)
+                        await Task.yield()
                     }
                 }
             }
