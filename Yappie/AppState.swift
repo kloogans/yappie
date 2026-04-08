@@ -198,6 +198,17 @@ final class AppState: ObservableObject {
 
         AudioFeedback.playStop()
         let samples = recorder.stopRecording()
+
+        // Need at least 0.1s of audio (1600 samples at 16kHz) to transcribe.
+        // A quick press-and-release captures zero or near-zero samples;
+        // sending that to WhisperKit can hang indefinitely, leaving the app
+        // stuck in .transcribing and unresponsive to further hotkey presses.
+        guard samples.count >= 1600 else {
+            debugLog("[Yappie] Recording too short (\(samples.count) samples), skipping transcription")
+            status = .idle
+            return
+        }
+
         status = .transcribing
 
         Task { @MainActor in
