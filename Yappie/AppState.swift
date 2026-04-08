@@ -199,11 +199,9 @@ final class AppState: ObservableObject {
         AudioFeedback.playStop()
         let samples = recorder.stopRecording()
 
-        // Need at least 0.1s of audio (1600 samples at 16kHz) to transcribe.
-        // A quick press-and-release captures zero or near-zero samples;
-        // sending that to WhisperKit can hang indefinitely, leaving the app
-        // stuck in .transcribing and unresponsive to further hotkey presses.
-        guard samples.count >= 1600 else {
+        // Need at least 0.5s of audio (8000 samples at 16kHz) to transcribe.
+        // Short recordings can cause WhisperKit to hang indefinitely.
+        guard samples.count >= 8000 else {
             debugLog("[Yappie] Recording too short (\(samples.count) samples), skipping transcription")
             status = .idle
             return
@@ -212,6 +210,7 @@ final class AppState: ObservableObject {
         status = .transcribing
 
         Task { @MainActor in
+            defer { status = .idle }
             do {
                 debugLog("[Yappie] stopRecording: \(samples.count) samples")
                 let manager: BackendManager
@@ -225,7 +224,18 @@ final class AppState: ObservableObject {
                     debugLog("[Yappie] BackendManager created")
                 }
                 debugLog("[Yappie] Starting transcription...")
-                let result = try await manager.transcribe(audioSamples: samples)
+                let result = try await withThrowingTaskGroup(of: TranscriptionResult.self) { group in
+                    group.addTask {
+                        try await manager.transcribe(audioSamples: samples)
+                    }
+                    group.addTask {
+                        try await Task.sleep(nanoseconds: 30_000_000_000)
+                        throw TranscriptionError.allBackendsFailed
+                    }
+                    let result = try await group.next()!
+                    group.cancelAll()
+                    return result
+                }
                 let enabledBackends = backendStore.enabledBackends
                 let usedBackend = result.backendIndex < enabledBackends.count ? enabledBackends[result.backendIndex] : nil
                 let usedModel = usedBackend?.model ?? "unknown"
@@ -244,7 +254,6 @@ final class AppState: ObservableObject {
                 debugLog("[Yappie] Transcription FAILED: \(error)")
                 showNotification(body: "Transcription failed. No backends available.")
             }
-            status = .idle
         }
     }
 
