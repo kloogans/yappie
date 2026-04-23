@@ -199,9 +199,9 @@ final class AppState: ObservableObject {
         AudioFeedback.playStop()
         let samples = recorder.stopRecording()
 
-        // Need at least 0.5s of audio (8000 samples at 16kHz) to transcribe.
-        // Short recordings can cause WhisperKit to hang indefinitely.
-        guard samples.count >= 8000 else {
+        // Need at least 0.2s of captured audio (3200 samples at 16kHz).
+        // LocalBackend pads shorter clips with leading silence before decoding.
+        guard samples.count >= 3200 else {
             debugLog("[Yappie] Recording too short (\(samples.count) samples), skipping transcription")
             status = .idle
             return
@@ -250,6 +250,9 @@ final class AppState: ObservableObject {
                 }
 
                 TextDelivery.deliver(result.text, mode: deliveryMode)
+            } catch TranscriptionError.emptyResponse {
+                debugLog("[Yappie] Transcription empty: no speech detected")
+                showNotification(body: "No speech detected.")
             } catch {
                 debugLog("[Yappie] Transcription FAILED: \(error)")
                 showNotification(body: "Transcription failed. No backends available.")

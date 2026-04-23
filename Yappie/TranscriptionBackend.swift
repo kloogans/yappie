@@ -90,16 +90,22 @@ final class BackendManager {
             throw TranscriptionError.allBackendsFailed
         }
 
+        var allReturnedEmpty = true
+
         for (index, backend) in backends.enumerated() {
             do {
                 let text = try await backend.transcribe(audioSamples: audioSamples)
                 return TranscriptionResult(text: text, backendIndex: index)
+            } catch TranscriptionError.emptyResponse {
+                debugLog("[Yappie] Backend \(index) returned empty transcription")
+                continue
             } catch {
                 debugLog("[Yappie] Backend \(index) failed: \(error)")
+                allReturnedEmpty = false
                 continue
             }
         }
 
-        throw TranscriptionError.allBackendsFailed
+        throw allReturnedEmpty ? TranscriptionError.emptyResponse : TranscriptionError.allBackendsFailed
     }
 }

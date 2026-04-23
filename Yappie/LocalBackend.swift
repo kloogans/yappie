@@ -27,16 +27,26 @@ final class LocalBackend: TranscriptionBackend {
     func transcribe(audioSamples: [Float]) async throws -> String {
         debugLog("[Yappie] LocalBackend.transcribe: \(audioSamples.count) samples, language=\(language ?? "auto")")
 
+        // Whisper (especially the small/tiny models) often returns empty text for
+        // clips under ~1s at temperature 0. Prepend silence so brief utterances
+        // sit further into the 30s decode window Whisper builds internally.
+        let minSamples = 16000 // 1s at 16kHz
+        let padded: [Float]
+        if audioSamples.count < minSamples {
+            padded = [Float](repeating: 0, count: minSamples - audioSamples.count) + audioSamples
+        } else {
+            padded = audioSamples
+        }
+
         let options = DecodingOptions(
             task: .transcribe,
             language: language,
-            temperature: 0.0,
             skipSpecialTokens: true,
             withoutTimestamps: true
         )
 
         let results = try await pipe.transcribe(
-            audioArray: audioSamples,
+            audioArray: padded,
             decodeOptions: options
         )
 
